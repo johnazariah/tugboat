@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Version>0.0.0</Version>
+    <Description>This library provides primitives to set up a configurable, application-agnostic .NET applications. Use it with the Tugboat.Templates to get started with .NET.</Description>
+    <Authors>John Azariah</Authors>
+  </PropertyGroup>
+</Project>

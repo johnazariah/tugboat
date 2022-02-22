@@ -1,0 +1,3 @@
+name: Tugboat
+description: An opinionated, batteries-included, set of templates and libraries to enable you to easily start developing applications with Microsoft .NET on Azure.
+theme: jekyll-theme-slate
