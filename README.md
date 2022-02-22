@@ -1,7 +1,7 @@
 # Tugboat
 
 ![CI](https://github.com/johnazariah/tugboat/workflows/CI/badge.svg)
- [![NuGet Package](https://img.shields.io/nuget/v/Tugboat.Templates.svg)](https://www.nuget.org/packages/Tugboat.Templates/)
+ [![NuGet Package](https://img.shields.io/nuget/v/WestIsland.Tugboat.Templates.svg)](https://www.nuget.org/packages/WestIsland.Tugboat.Templates/)
 
 This library attempts to provide a simple, boilerplate free foundation on which to get started with .NET, with pragmatic defaults and extension points, allowing a developer to focus on grain design and testing whilst providing opinionated guidance around the real-world concerns of configuration, packaging, service presentation and deployment.
 
