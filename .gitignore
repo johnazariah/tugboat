@@ -234,5 +234,5 @@ k8s-deployment.yml
 persistence.json
 clustering.json
 scratch/
-Setup.cfg
+.config/
 .fake
