@@ -21,7 +21,7 @@ dotnet-clean:
 	dotnet clean $(project).sln
 
 dotnet-run :
-	powershell Start-Process 'out/$(project)/$(project).exe' -WorkingDirectory 'out/$(project)'
+	dotnet 'out/$(project)/$(project).dll' -WorkingDirectory 'out/$(project)'
 	@echo Launched DotNet projects
 
 dotnet-all: dotnet-clean dotnet-test dotnet-test dotnet-publish dotnet-run
