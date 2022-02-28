@@ -17,7 +17,7 @@ EXPOSE 8080 80
 
 # This is the app-insights key used to log diagnostics.
 # It is _strongly_ recommended that you supply a run-time value here when running in Azure.
-ENV ENV_APPINSIGHTS_KEY           ""
+ENV APPLICATIONINSIGHTS_CONNECTION_STRING           ""
 
 COPY --from=build /app .
 
