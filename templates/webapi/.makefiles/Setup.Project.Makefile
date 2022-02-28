@@ -39,14 +39,14 @@ proj-setup-frontdoor :
 		PIP Id $(pip_resource_id) \
 		and PIP IP $(pip_ip)
 
-	az afd endpoint create \
+	- az afd endpoint create \
 		--profile-name $(org_azurefrontdoor) \
 		--resource-group $(org_resource_group) \
 		--enabled-state Enabled \
 		--endpoint-name $(org) \
 		--origin-response-timeout-seconds 60
 
-	az afd origin-group create \
+	- az afd origin-group create \
 		--profile-name $(org_azurefrontdoor) \
 		--resource-group $(org_resource_group) \
 		--origin-group-name $(proj_name) \
@@ -57,7 +57,7 @@ proj-setup-frontdoor :
 		--successful-samples-required 3 \
 		--additional-latency-in-milliseconds 50
 
-	az afd origin create \
+	- az afd origin create \
 		--profile-name $(org_azurefrontdoor) \
 		--resource-group $(org_resource_group) \
 		--origin-group-name $(proj_name) \
@@ -69,7 +69,7 @@ proj-setup-frontdoor :
 		--priority 1 \
 		--weight 1000
 
-	az afd route create \
+	- az afd route create \
 		--profile-name $(org_azurefrontdoor) \
 		--resource-group $(org_resource_group) \
 		--endpoint-name $(org) \
