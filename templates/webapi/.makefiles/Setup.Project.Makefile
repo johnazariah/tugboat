@@ -32,43 +32,24 @@ proj-setup-aks :
 
 proj-setup-frontdoor :
 	@echo Starting to set up project Azure Front Door profile
-	ENDPOINT_NAME := $(org)
-	ORIGIN_GROUP_NAME := $(proj_name)
-	ORIGIN_NAME := $(proj_name)
-	ROUTE_NAME := $(proj_name)
-	AGW_RESOURCE_ID := $(
-		az aks show \
-			--name $(proj_cluster) \
-			--resource-group $(proj_resource_group) \
-			--query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId" \
-			--output tsv
-	)
-
-	PIP_RESOURCE_ID := $(
-		az network application-gateway show \
-			--ids $(AGW_RESOURCE_ID) \
-			--query "frontendIpConfigurations[?publicIpAddress.id != '' && type == 'Microsoft.Network/applicationGateways/frontendIPConfigurations'] | [0].publicIpAddress.id" \
-			--output tsv
-	)
-
-	PIP_IP := $(
-		az network public-ip show \
-			--ids $(PIP_RESOURCE_ID) \
-			--query "ipAddress" \
-			--output tsv
-	)
+	$(eval agw_resource_id := $(shell az aks show --name $(proj_cluster) --resource-group $(proj_resource_group) --query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId" --output tsv ))
+	$(eval pip_resource_id := $(shell az network application-gateway show --ids $(agw_resource_id) --query "frontendIpConfigurations[?publicIpAddress.id != '' && type == 'Microsoft.Network/applicationGateways/frontendIPConfigurations'] | [0].publicIpAddress.id" --output tsv))
+	$(eval pip_ip := $(shell az network public-ip show --ids $(pip_resource_id) --query "ipAddress" --output tsv))
+	@echo Retrieved AGW Id $(agw_resource_id), \
+		PIP Id $(pip_resource_id) \
+		and PIP IP $(pip_ip)
 
 	az afd endpoint create \
 		--profile-name $(org_azurefrontdoor) \
 		--resource-group $(org_resource_group) \
 		--enabled-state Enabled \
-		--endpoint-name $(ENDPOINT_NAME) \
+		--endpoint-name $(org) \
 		--origin-response-timeout-seconds 60
 
 	az afd origin-group create \
 		--profile-name $(org_azurefrontdoor) \
 		--resource-group $(org_resource_group) \
-		--origin-group-name $(ORIGIN_GROUP_NAME) \
+		--origin-group-name $(proj_name) \
 		--probe-path "/" \
 		--probe-protocol NotSet \
 		--probe-request-type NotSet \
@@ -79,10 +60,10 @@ proj-setup-frontdoor :
 	az afd origin create \
 		--profile-name $(org_azurefrontdoor) \
 		--resource-group $(org_resource_group) \
-		--origin-group-name $(ORIGIN_GROUP_NAME) \
-		--origin-name $(ORIGIN_NAME) \
+		--origin-group-name $(proj_name) \
+		--origin-name $(proj_name) \
 		--enabled-state Enabled \
-		--host-name $(PIP_IP) \
+		--host-name $(pip_ip) \
 		--http-port 80 \
 		--https-port 443 \
 		--priority 1 \
@@ -91,10 +72,10 @@ proj-setup-frontdoor :
 	az afd route create \
 		--profile-name $(org_azurefrontdoor) \
 		--resource-group $(org_resource_group) \
-		--endpoint-name $(ENDPOINT_NAME) \
-		--route-name $(ROUTE_NAME) \
+		--endpoint-name $(org) \
+		--route-name $(proj_name) \
 		--https-redirect Enabled \
-		--origin-group $(ORIGIN_GROUP_NAME) \
+		--origin-group $(proj_name) \
 		--https-redirect Enabled \
 		--supported-protocols Https \
 		--patterns-to-match "/$(proj_name)/*" \
