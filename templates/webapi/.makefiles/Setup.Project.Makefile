@@ -19,12 +19,11 @@ proj-setup-aks :
 		--name $(proj_cluster)\
 		--resource-group $(proj_resource_group)\
 		--location $(proj_region)\
-		--node-vm-size Standard_DS2_v5\
+		--node-vm-size Standard_DS2_v2\
 		--node-count 2\
-		--workspace-resource-id /subscriptions/$(sub)/resourcegroups/$(org_resource_group)/providers/microsoft.operationalinsights/workspaces/$(org_lawks)\
 		--attach-acr $(org_acr)\
-		--enable-addons monitoring\
-		--enable-addons ingress-appgw\
+		--enable-addons monitoring,ingress-appgw\
+		--workspace-resource-id /subscriptions/$(sub)/resourcegroups/$(org_resource_group)/providers/microsoft.operationalinsights/workspaces/$(org_lawks)\
 		--appgw-name $(proj_appgateway)\
 		--appgw-subnet-cidr "10.2.0.0/16"\
 		--enable-managed-identity\
