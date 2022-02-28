@@ -12,9 +12,7 @@ docker-push :
 	@echo Pushed images to container registry
 
 docker-run :
-	powershell Start-Process powershell -ArgumentList \
-	'docker','run','--rm',\
-	'$(container_name)'
+	docker run --rm -p 5000:80 $(container_name)
 	@echo Launched container
 
 docker-image-explore :
