@@ -14,6 +14,7 @@ init : git-init
 
 git-init :
 	git init
+	git branch -m main
 	git add .
 	git commit -m "Initial commit of GeneratedProjectName"
 
