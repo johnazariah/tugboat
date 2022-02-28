@@ -1,4 +1,4 @@
-LibraryVersion:=0.0.1
+LibraryVersion:=0.0.3
 NugetApiKey:=
 
 source:=
@@ -153,7 +153,7 @@ copy-appl-tests.% :
 
 copy-templates.% :
 	@echo Copying Templates For $* [$(lang)]
-	cp -rv $(templates_root)/$*/ $(copy_target_root)/$*-$(lang)
+	cp -rvT $(templates_root)/$*/ $(copy_target_root)/$*-$(lang)
 	@echo
 	@echo Fixing up Language Specific Suffixes
 	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Makefile     template=$* replace-pattern
