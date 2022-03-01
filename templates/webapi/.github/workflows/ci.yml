@@ -3,8 +3,8 @@ name: CI
 on:
   pull_request:
     branches: [ main ]
-  # push:
-  #   branches: [ main ]
+  push:
+    branches: [ main ]
 
 jobs:
   build-and-test-solution:
@@ -17,5 +17,5 @@ jobs:
       run: make dotnet-build
     - name: test .NET
       run: make dotnet-test
-    # - name: build Docker
-    #   run: make docker-build
+    - name: build Docker
+      run: make docker-build

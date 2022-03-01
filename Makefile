@@ -157,6 +157,7 @@ copy-templates.% :
 	@echo
 	@echo Fixing up Language Specific Suffixes
 	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Makefile     template=$* replace-pattern
+	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=.makefiles/Targets.Dotnet.Makefile     template=$* replace-pattern
 	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=GeneratedProjectName.sln template=$* replace-pattern
 	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Dockerfile   template=$* replace-pattern
 	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=tye.yaml     template=$* replace-pattern
