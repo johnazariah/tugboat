@@ -4,7 +4,7 @@ docker-list :
 	docker images
 
 docker-build :
-	docker build . --rm --build-arg config=$(config) --file Dockerfile --tag $(container_name)
+	docker build . --rm --build-arg config=$(proj_config) --file Dockerfile --tag $(container_name)
 	@echo Built and tagged images
 
 docker-push :

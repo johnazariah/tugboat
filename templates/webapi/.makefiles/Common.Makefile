@@ -1,33 +1,25 @@
-#overrides from .cfg files
-
-org_region          ?=westus
-proj_region         ?=westus
-config              ?=Debug
-org_acr_login_token ?=<some illegal token which will fail>
-
 # 
 # Resources shall be named according to convention:
 # https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming
 #
 
 #organization configuration
-org-lc=$(shell echo $(org) | tr A-Z a-z)
-org_name=$(org-lc)-oaks-$(org_region)
-org_resource_group=rg-$(org_name)
-org_acr=$(shell echo """acr$(org-lc)$(oaks)""" | cut -c1-45 | tr A-Z a-z)
-org_acr_login_server=$(org_acr).azurecr.io
-org_azurefrontdoor=afd-$(org_name)
-org_keyvault=kv-$(org_name)
-org_lawks=lawks-$(org_name)
+org-lc:=$(shell echo $(org) | tr A-Z a-z)
+org_name:=$(org-lc)-oaks-$(org_region)
+org_resource_group:=rg-$(org_name)
+org_acr:=$(shell echo """acr$(org-lc)$(oaks)""" | cut -c1-45 | tr A-Z a-z)
+org_acr_login_server:=$(org_acr).azurecr.io
+org_azurefrontdoor:=afd-$(org_name)
+org_keyvault:=kv-$(org_name)
+org_lawks:=lawks-$(org_name)
 
 # project configuration
-project   :=GeneratedProjectName
 project-lc:=$(shell echo $(project) | tr A-Z a-z)
 
-proj_name=$(org-lc)-$(project-lc)-$(proj_region)
-proj_resource_group=rg-$(proj_name)
-proj_cluster=aks-$(project-lc)
-proj_appgateway=agw-$(project-lc)
+proj_name:=$(org-lc)-$(project-lc)-$(proj_region)
+proj_resource_group:=rg-$(proj_name)
+proj_cluster:=aks-$(project-lc)
+proj_appgateway:=agw-$(project-lc)
 
 # container name
 org_acr_login_server  ?=local
@@ -44,10 +36,13 @@ init : git-init
 	git status
 
 git-init :
+	@echo registering $(git_username) [$(git_email)]
 	git init
-	git branch -m main
+	git config user.email $(git_email)
+	git config user.name  $(git_username)
 	git add .
-	git commit -m "Initial commit of GeneratedProjectName"
+	git commit -m "Initial commit of sloop"
+	git branch -m main
 
 # Utilities
 get-random-number:
@@ -56,6 +51,9 @@ get-random-number:
 list-config:
 	@echo
 	@echo Modify these values by editing files in the '.config' directory.
+	@echo
+	@echo "git_username                   : "[$(git_username)]
+	@echo "git_email                      : "[$(git_email)]
 	@echo
 	@echo "sub                            : "[$(sub)]
 	@echo "org                            : "[$(org)]
@@ -70,6 +68,7 @@ list-config:
 	@echo "org_keyvault                   : "[$(org_keyvault)]
 	@echo "org_lawks                      : "[$(org_lawks)]
 	@echo
+	@echo "project                        : "[$(project)]
 	@echo "proj_resource_group            : "[$(proj_resource_group)]
 	@echo "proj_region                    : "[$(proj_region)]
 	@echo "proj_cluster                   : "[$(proj_cluster)]

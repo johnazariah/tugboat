@@ -11,7 +11,7 @@ k8s-deploy : k8s-create-namespace k8s-upgrade
 k8s-upgrade : k8s-replace-image-tag k8s-apply
 	@echo Upgraded $(k8s_namespace)
 
-k8s-apply :
+k8s-apply : k8s-replace-image-tag
 	kubectl apply -f k8s-deployment.yml
 
 k8s-status :
@@ -28,6 +28,7 @@ k8s-replace-image-tag :
 	sed -e \
 		"s|{image-name}|$(container_name)|g;\
 		 s|{project-name}|$(project-lc)|g;\
+		 s|{org-name}|$(org-lc)|g;"\
 		k8s-deployment.ymlt > k8s-deployment.yml
 
 k8s-deploy-dashboard :

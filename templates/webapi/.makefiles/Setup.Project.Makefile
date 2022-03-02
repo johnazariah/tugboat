@@ -13,28 +13,36 @@ proj-setup-rg :
 		--location $(proj_region)
 	@echo
 
+proj-setup-aks : acr_id   = $(shell az acr show --name $(org_acr) --resource-group $(org_resource_group) --query "id" --output tsv)
+proj-setup-aks : lawks_id = $(shell az monitor log-analytics workspace show --workspace-name $(org_lawks) --resource-group $(org_resource_group) --query "id" --output tsv)
 proj-setup-aks :
 	@echo Starting to set up project AKS cluster [$(proj_cluster)]
+	@echo
+	@echo Will connect cluster $(proj_cluster) to ACR $(acr_id), \
+		LA Workspace $(lawks_id)
+
 	- az aks create\
 		--name $(proj_cluster)\
 		--resource-group $(proj_resource_group)\
 		--location $(proj_region)\
-		--node-vm-size Standard_DS2_v2\
+		--node-vm-size standard_d2s_v5\
 		--node-count 2\
-		--attach-acr $(org_acr)\
+		--network-plugin azure\
+		--enable-managed-identity\
 		--enable-addons monitoring,ingress-appgw\
-		--workspace-resource-id /subscriptions/$(sub)/resourcegroups/$(org_resource_group)/providers/microsoft.operationalinsights/workspaces/$(org_lawks)\
+		--workspace-resource-id $(lawks_id)\
 		--appgw-name $(proj_appgateway)\
 		--appgw-subnet-cidr "10.2.0.0/16"\
-		--enable-managed-identity\
+		--attach-acr $(acr_id)\
 		--generate-ssh-keys
 	@echo
 
+proj-setup-frontdoor : agw_resource_id = $(shell az aks show --name $(proj_cluster) --resource-group $(proj_resource_group) --query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId" --output tsv )
+proj-setup-frontdoor : pip_resource_id = $(shell az network application-gateway show --ids $(agw_resource_id) --query "frontendIpConfigurations[?publicIpAddress.id != '' && type == 'Microsoft.Network/applicationGateways/frontendIPConfigurations'] | [0].publicIpAddress.id" --output tsv)
+proj-setup-frontdoor : pip_ip          = $(shell az network public-ip show --ids $(pip_resource_id) --query "ipAddress" --output tsv)
 proj-setup-frontdoor :
 	@echo Starting to set up project Azure Front Door profile
-	$(eval agw_resource_id := $(shell az aks show --name $(proj_cluster) --resource-group $(proj_resource_group) --query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId" --output tsv ))
-	$(eval pip_resource_id := $(shell az network application-gateway show --ids $(agw_resource_id) --query "frontendIpConfigurations[?publicIpAddress.id != '' && type == 'Microsoft.Network/applicationGateways/frontendIPConfigurations'] | [0].publicIpAddress.id" --output tsv))
-	$(eval pip_ip := $(shell az network public-ip show --ids $(pip_resource_id) --query "ipAddress" --output tsv))
+	@echo 
 	@echo Retrieved AGW Id $(agw_resource_id), \
 		PIP Id $(pip_resource_id) \
 		and PIP IP $(pip_ip)
