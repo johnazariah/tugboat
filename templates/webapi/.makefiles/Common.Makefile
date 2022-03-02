@@ -1,3 +1,34 @@
+#overrides from .cfg files
+
+org_region          ?=westus
+proj_region         ?=westus
+config              ?=Debug
+org_acr_login_token ?=<some illegal token which will fail>
+
+# 
+# Resources shall be named according to convention:
+# https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming
+#
+
+#organization configuration
+org-lc=$(shell echo $(org) | tr A-Z a-z)
+org_name=$(org-lc)-oaks-$(org_region)
+org_resource_group=rg-$(org_name)
+org_acr=$(shell echo """acr$(org-lc)$(oaks)""" | cut -c1-45 | tr A-Z a-z)
+org_acr_login_server=$(org_acr).azurecr.io
+org_azurefrontdoor=afd-$(org_name)
+org_keyvault=kv-$(org_name)
+org_lawks=lawks-$(org_name)
+
+# project configuration
+project   :=GeneratedProjectName
+project-lc:=$(shell echo $(project) | tr A-Z a-z)
+
+proj_name=$(org-lc)-$(project-lc)-$(proj_region)
+proj_resource_group=rg-$(proj_name)
+proj_cluster=aks-$(project-lc)
+proj_appgateway=agw-$(project-lc)
+
 # container name
 org_acr_login_server  ?=local
 git_branch            ?=$(subst /,--,$(shell git rev-parse --abbrev-ref HEAD))
