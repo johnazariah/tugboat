@@ -1,15 +1,15 @@
 # Dotnet Commands
 
 dotnet-publish :
-	dotnet publish --no-build $(project)/$(project)._PROJ_SUFFIX_ -c $(config) -o out/$(project)
+	dotnet publish --no-build $(project)/$(project).csproj -c $(proj_config) -o out/$(project)
 	@echo Built DotNet projects
 
 dotnet-test : dotnet-build
-	dotnet test --no-build $(project).sln -c $(config)
+	dotnet test --no-build $(project).sln -c $(proj_config)
 	@echo Built DotNet projects
 
 dotnet-build : dotnet-restore
-	dotnet build --no-restore $(project).sln -c $(config)
+	dotnet build --no-restore $(project).sln -c $(proj_config)
 	@echo Built DotNet projects
 
 dotnet-restore :

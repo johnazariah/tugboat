@@ -136,7 +136,7 @@ copy-single-template.webapi : copy-single-template.% : copy-common.% copy-appl-c
 	- rm $(copy_target_root)/$*-$(lang)/GeneratedProjectName/$*.$(projsuffix)
 	@echo
 
-copy-common.% : copy-appl-logic.% copy-appl-tests.% copy-templates.% copy-ignores.%
+copy-common.% : copy-appl-logic.% copy-appl-tests.% copy-templates.% copy-ignores.% copy-scripts.%
 	@echo Copied Common Components For $* [$(lang)]
 	@echo
 
@@ -189,6 +189,12 @@ copy-ignores.% :
 	- cp .gitignore    $(copy_target_root)/$*-$(lang)/.gitignore
 	- cp .dockerignore $(copy_target_root)/$*-$(lang)/.dockerignore
 	@echo
+
+copy-scripts.% :
+	@echo Copying scripts For $* [$(lang)]
+	- cp dev.sh    $(copy_target_root)/$*-$(lang)/dev.sh
+	@echo
+
 
 replace-project-reference-with-nuget-reference :
 	- sed -e "s/<ProjectReference.*Library.Tugboat.csproj\"/<PackageReference Include=\"WestIsland.Tugboat\" Version=\"$(LibraryVersion)\"/g" $(proto_root)-$(lang)/$(src_project_file) > $(copy_target_root)/$(dest_project_file)
