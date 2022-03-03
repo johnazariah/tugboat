@@ -20,6 +20,10 @@ proj_name:=$(org-lc)-$(project-lc)-$(proj_region)
 proj_resource_group:=rg-$(proj_name)
 proj_cluster:=aks-$(project-lc)
 proj_appgateway:=agw-$(project-lc)
+proj_acr_sp:=sp-$(proj_name)
+
+#github configuration
+github_repo           ?=$(org-lc)-$(project-lc)
 
 # container name
 org_acr_login_server  ?=local
@@ -54,6 +58,9 @@ list-config:
 	@echo
 	@echo "git_username                   : "[$(git_username)]
 	@echo "git_email                      : "[$(git_email)]
+	@echo
+	@echo "github_user                    : "[$(github_user)]
+	@echo "github_repo                    : "[$(github_repo)]
 	@echo
 	@echo "sub                            : "[$(sub)]
 	@echo "org                            : "[$(org)]
