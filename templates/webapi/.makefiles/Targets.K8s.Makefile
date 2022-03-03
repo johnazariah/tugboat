@@ -28,6 +28,7 @@ k8s-replace-image-tag :
 	sed -e \
 		"s|{image-name}|$(container_name)|g;\
 		 s|{project-name}|$(project-lc)|g;\
+		 s|{image-tag}|$(image_tag)|g;\
 		 s|{org-name}|$(org-lc)|g;"\
 		k8s-deployment.ymlt > k8s-deployment.yml
 

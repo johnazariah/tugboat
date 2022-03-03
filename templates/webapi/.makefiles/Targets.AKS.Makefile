@@ -5,8 +5,9 @@ aks-switch-context :
 	KUBECONFIG=$$HOME/.kube/config:.aks_kube_config kubectl config view --merge --flatten > ~/.kube/merged_kubeconfig && mv ~/.kube/merged_kubeconfig ~/.kube/config
 	kubectl config use-context $(proj_cluster)
 
+aks-acr-login : acr_login_token =$(az acr login --name $(org_acr) --expose-token --query accessToken -o tsv)
 aks-acr-login :
-	- docker login $(org_acr_login_server) -u 00000000-0000-0000-0000-000000000000 -p $(org_acr_login_token)
+	- docker login $(org_acr_login_server) -u 00000000-0000-0000-0000-000000000000 -p $(acr_login_token)
 
 aks-set-secrets : k8s-create-namespace
 	@echo Completed setting up secrets
