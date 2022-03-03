@@ -1,22 +1,22 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: {project-name}-deployment
+  name: {project-name}-{image-tag}-deployment
   labels:
-    serviceId: {project-name}-deployment
+    serviceId: {project-name}-{image-tag}-deployment
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: {project-name}-pod
+      app: {project-name}-{image-tag}-pod
   template:
     metadata:
       labels:
-        app: {project-name}-pod
+        app: {project-name}-{image-tag}-pod
     spec:
       terminationGracePeriodSeconds: 180
       containers:
-      - name: {project-name}-container
+      - name: {project-name}-{image-tag}-container
         image: {image-name}
         resources:
           limits:
@@ -44,20 +44,20 @@ spec:
           protocol: TCP
         - name: dashboard
           containerPort: 8080
-          protocol: TCP        
+          protocol: TCP
   minReadySeconds: 60
   strategy:
     rollingUpdate:
       maxUnavailable: 0
-      maxSurge: 1  
+      maxSurge: 1
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: {project-name}-service
+  name: {project-name}-{image-tag}-service
 spec:
   selector:
-    app: {project-name}-pod
+    app: {project-name}-{image-tag}-pod
   type: LoadBalancer
   ports:
   - name: dashboard
@@ -66,3 +66,29 @@ spec:
   - name: http
     port: 80
     targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {project-name}
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/backend-path-prefix: "/"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /{project-name}/{image-tag}/dashboard
+        pathType: Prefix
+        backend:
+          service:
+            name: {project-name}-{image-tag}-service
+            port:
+              number: 8080
+      - path: /{project-name}/{image-tag}
+        pathType: Prefix
+        backend:
+          service:
+            name: {project-name}-{image-tag}-service
+            port:
+              number: 80
