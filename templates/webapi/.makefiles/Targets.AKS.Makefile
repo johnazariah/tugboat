@@ -14,3 +14,16 @@ aks-set-secrets : k8s-create-namespace
 
 aks-prepare : aks-acr-login aks-switch-context aks-set-secrets
 	@echo Prepared context to run against remote AKS!
+
+aks-get-credentials :
+	az aks get-credentials \
+	--resource-group $(proj_resource_group) \
+	--name $(proj_cluster) \
+	--overwrite-existing
+
+acr-build :
+	az acr build \
+	--registry $(org_acr) \
+	--image $(container_name) \
+	--file Dockerfile \
+	.

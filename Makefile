@@ -1,4 +1,4 @@
-LibraryVersion:=0.0.5
+LibraryVersion:=0.0.7
 NugetApiKey:=
 
 source:=
@@ -133,7 +133,7 @@ copy-template.% : template=$(basename $*)
 copy-template.% :
 	$(MAKE) lang=$(lang) copy-single-template.$(template)
 
-copy-single-template.webapi : copy-single-template.% : copy-common.% copy-appl-controllers.% copy-project.%
+copy-single-template.webapi : copy-single-template.% : copy-common.% copy-appl-controllers.% copy-project.% 
 	@echo Built Template Folder For $* [$(lang)]
 	- rm $(copy_target_root)/$*-$(lang)/GeneratedProjectName/$*.$(projsuffix)
 	@echo
@@ -153,26 +153,22 @@ copy-appl-tests.% :
 	$(MAKE) src_project_file=appl-tests/appl-tests.$(projsuffix) dest_project_file=$*-$(lang)/appl-tests/appl-tests.$(projsuffix) replace-project-reference-with-nuget-reference
 	@echo
 
-copy-templates.% :
+copy-templates.% : makefiles=$(foreach f,$(wildcard $(templates_root)/$*/.makefiles/*.Makefile),$(notdir $(f)))
+copy-templates.% : 
 	@echo Copying Templates For $* [$(lang)]
 	cp -rv $(templates_root)/$*/. $(copy_target_root)/$*-$(lang)
 	@echo
 	@echo Fixing up Language Specific Suffixes
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Makefile                               template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=.makefiles/Common.Makefile             template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=.makefiles/Setup.Organization.Makefile template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=.makefiles/Setup.Project.Makefile      template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=.makefiles/Targets.AKS.Makefile        template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=.makefiles/Targets.Az.Makefile         template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=.makefiles/Targets.Dotnet.Makefile     template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=.makefiles/Targets.Docker.Makefile     template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=.makefiles/Targets.K8s.Makefile        template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=GeneratedProjectName.sln               template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Dockerfile                             template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=tye.yaml                               template=$* replace-pattern
+	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Makefile                 template=$* replace-pattern
+	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=GeneratedProjectName.sln template=$* replace-pattern
+	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Dockerfile               template=$* replace-pattern
+	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=tye.yaml                 template=$* replace-pattern
 
 	$(MAKE) replace_pattern=_LANGNAME_ replacement_pattern=$(language_name) replace_in_file=.template.config/template.json template=$* replace-pattern
 	$(MAKE) replace_pattern=_LANG_     replacement_pattern=$(language)      replace_in_file=.template.config/template.json template=$* replace-pattern
+	for f in $(makefiles); do\
+		$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=.makefiles/$$f template=$* replace-pattern;\
+	done
 	@echo
 
 copy-appl-controllers.% :
@@ -194,12 +190,11 @@ copy-ignores.% :
 
 copy-scripts.% :
 	@echo Copying scripts For $* [$(lang)]
-	- cp dev.sh    $(copy_target_root)/$*-$(lang)/dev.sh
+	- cp dev.sh  $(copy_target_root)/$*-$(lang)/dev.sh
 	@echo
 
-
 replace-project-reference-with-nuget-reference :
-	- sed -e "s/<ProjectReference.*Library.Tugboat.csproj\"/<PackageReference Include=\"WestIsland.Tugboat\" Version=\"$(LibraryVersion)\"/g" $(proto_root)-$(lang)/$(src_project_file) > $(copy_target_root)/$(dest_project_file)
+	- sed -e "s/<ProjectReference.*Library.Tugboat.csproj\"/<PackageReference Include=\"WestIsland.Tugboat\" Version=\"*\"/g" $(proto_root)-$(lang)/$(src_project_file) > $(copy_target_root)/$(dest_project_file)
 
 pack-template-pack :
 	$(MAKE) project_path=$(scratch)/build/Tugboat.Templates.csproj package_name=WestIsland.Tugboat.Templates package_version=$(LibraryVersion) pack

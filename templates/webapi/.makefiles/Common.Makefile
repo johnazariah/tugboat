@@ -29,7 +29,7 @@ github_repo           ?=$(org-lc)-$(project-lc)
 org_acr_login_server  ?=local
 git_branch            ?=$(subst /,--,$(shell git rev-parse --abbrev-ref HEAD))
 git_latest_hash       ?=$(shell git log -1 --pretty=format:"%h")
-image_tag             ?=$(git_branch)-$(git_latest_hash)
+image_tag             ?=$(git_latest_hash)
 container_name        ?=$(org_acr_login_server)/$(project-lc):$(image_tag)
 
 # k8s namespace
@@ -45,7 +45,7 @@ git-init :
 	git config user.email $(git_email)
 	git config user.name  $(git_username)
 	git add .
-	git commit -m "Initial commit of sloop"
+	git commit -m "Initial commit of $(project-lc)"
 	git branch -m main
 
 # Utilities
