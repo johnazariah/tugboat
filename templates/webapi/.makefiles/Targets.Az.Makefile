@@ -5,8 +5,8 @@ az-start:
 
 # These commands are to be accessed from within the docker image started above
 az-login:
-	az login
-	@echo Ensure you set your default subscription in '.config/subscription.cfg'
+	az login --tenant $(tenant)
+	@echo Ensure you set your default tenant and subscription in '.config/subscription.cfg'
 
 az-sub-set:
 	az account set --subscription $(sub)
