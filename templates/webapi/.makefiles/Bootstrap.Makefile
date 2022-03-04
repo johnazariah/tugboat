@@ -24,14 +24,17 @@ bootstrap-org : list-config org-setup org-login-acr
 	@echo Run the following command to bootstrap your project
 	@echo 	make bootstrap-project
 
-bootstrap-project : list-config aks-acr-login proj-setup proj-prepare-aks
+bootstrap-project : list-config aks-acr-login proj-setup proj-prepare-aks gh-setup
 	@echo Project $(project) bootstrapped
 	@echo
-	@echo To build and deploy your project as part of the development workflow, run
-	@echo 	make build
+	@echo To build and deploy your project for the first time, run
+	@echo 	make firstbuild
 
 firstbuild: list-config docker-build docker-push k8s-deploy k8s-status
 	@echo Project deployed to the cluster!
+	@echo
+	@echo To build and deploy your project as part of your local-development workflow, run
+	@echo 	make build
 
 build: list-config docker-build docker-push k8s-upgrade k8s-status
 	@echo Changes pushed to the cluster!

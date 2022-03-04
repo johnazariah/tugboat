@@ -29,6 +29,8 @@ template-types:=webapi
 project-types:=webapi
 languages:=csharp fsharp
 
+devenv-image:=westisland/tugboat:latest
+
 # Docker Targets
 docker-stop :
 	@echo Stopping all  containers
@@ -229,3 +231,12 @@ test-dotnet-flow :
 create-scratch-project :
 	mkdir -p $(test_install_root)
 	dotnet new tugboat-$(template) -lang $(language) -n $(scratch_proj) -o $(test_install_root)/$(lang)/$(template)
+
+#devenv targets
+devenv-image :
+	- docker build -f DevEnvironment.Dockerfile -t $(devenv-image) .
+#	- docker scan --accept-license -f DevEnvironment.Dockerfile $(devenv-image)
+
+devenv-image-push: devenv-image
+	docker login
+	- docker push $(devenv-image)

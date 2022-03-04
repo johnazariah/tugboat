@@ -5,11 +5,13 @@
 
 -include .config/git.cfg
 -include .config/subscription.cfg
+-include .config/github.cfg
 -include .config/organization.cfg
 -include .config/project.cfg
 
 -include .makefiles/Defaults.Makefile
 -include .makefiles/Common.Makefile
+-include .makefiles/Setup.Github.Makefile
 -include .makefiles/Setup.Organization.Makefile
 -include .makefiles/Setup.Project.Makefile
 -include .makefiles/Targets.Dotnet.Makefile

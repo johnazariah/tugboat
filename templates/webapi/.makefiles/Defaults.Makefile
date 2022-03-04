@@ -2,7 +2,6 @@
 
 org                 ?=evergreen
 org_region          ?=westus
-org_acr_login_token ?="some illegal token which will fail"
 
 project             ?=GeneratedProjectName
 proj_region         ?=westus
