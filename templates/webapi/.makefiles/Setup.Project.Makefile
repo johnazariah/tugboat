@@ -47,13 +47,6 @@ proj-setup-frontdoor :
 		PIP Id $(pip_resource_id) \
 		and PIP IP $(pip_ip)
 
-	- az afd endpoint create \
-		--profile-name $(org_azurefrontdoor) \
-		--resource-group $(org_resource_group) \
-		--enabled-state Enabled \
-		--endpoint-name $(org) \
-		--origin-response-timeout-seconds 60
-
 	- az afd origin-group create \
 		--profile-name $(org_azurefrontdoor) \
 		--resource-group $(org_resource_group) \
@@ -80,14 +73,14 @@ proj-setup-frontdoor :
 	- az afd route create \
 		--profile-name $(org_azurefrontdoor) \
 		--resource-group $(org_resource_group) \
-		--endpoint-name $(org) \
+		--endpoint-name $(org_azurefrontdoor) \
 		--route-name $(proj_name) \
 		--https-redirect Enabled \
 		--origin-group $(proj_name) \
 		--https-redirect Enabled \
 		--supported-protocols Https \
-		--patterns-to-match "/$(proj_name)/*" \
-		--origin-path "/$(proj_name)/" \
+		--patterns-to-match "/$(project-lc)/*" \
+		--origin-path "/$(project-lc)/" \
 		--link-to-default-domain Disabled \
 		--forwarding-protocol HttpOnly
 	@echo

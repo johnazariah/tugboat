@@ -36,3 +36,4 @@ docker-kill : docker-stop
 docker-clean : docker-kill
 	@echo Pruning all images
 	- docker image prune -af
+
