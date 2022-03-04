@@ -25,16 +25,17 @@ bootstrap-org : list-config org-setup org-login-acr
 	@echo 	make bootstrap-project
 
 bootstrap-project : list-config aks-acr-login proj-setup proj-prepare-aks gh-setup
-	@echo Project $(project) bootstrapped
+	@echo Project $(project) bootstrapped and deployed!
 	@echo
-	@echo To build and deploy your project for the first time, run
-	@echo 	make firstbuild
+	@echo Make changes to your code, commit and push to your main branch on Github and
+	@echo 	they will automatically be built and deployed!
+	@echo
 
-firstbuild: list-config docker-build docker-push k8s-deploy k8s-status
+manual-firstbuild: list-config docker-build docker-push k8s-deploy k8s-status
 	@echo Project deployed to the cluster!
 	@echo
 	@echo To build and deploy your project as part of your local-development workflow, run
 	@echo 	make build
 
-build: list-config docker-build docker-push k8s-upgrade k8s-status
+manual-build: list-config docker-build docker-push k8s-upgrade k8s-status
 	@echo Changes pushed to the cluster!

@@ -1,4 +1,4 @@
-name: CI/CD 
+name: CI/CD
 
 on:
   pull_request:
@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 jobs:
   build-and-test-solution:
+    name: build-and-test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -19,22 +20,16 @@ jobs:
       run: make dotnet-build
     - name: test .NET
       run: make dotnet-test
-  push-to-acr:
-    runs-on: ubuntu-latest
-    steps:
+    - name: login to Azure
+      run: |
+        az login \
+        --service-principal \
+        --username ${{ secrets.service_principal_id }} \
+        --password ${{ secrets.service_principal_password }} \
+        --tenant   ${{ secrets.service_principal_tenant }}
     - name: ACR build
-      id: acr
-      uses: azure/acr-build@v1
-      with:
-        git_access_token:           ${{ secrets.git_access_token }}
-        service_principal:          ${{ secrets.service_principal_id }}
-        service_principal_password: ${{ secrets.service_principal_password }}
-        tenant:                     ${{ secrets.service_principal_tenant }}
-        registry:                   ${{ secrets.registry }}
-        repository:                 ${{ secrets.repository }}
-        image:                      ${{ secrets.image }}
-        folder:     ./
-        dockerfile: ./Dockerfile
-        branch:     main
-    
-  
+      run: make acr-build
+    - name: Get AKS Credentials
+      run: make aks-get-credentials
+    - name: Deploy to AKS
+      run: make k8s-deploy
