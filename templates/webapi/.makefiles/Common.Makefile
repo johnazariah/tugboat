@@ -10,7 +10,7 @@ org_resource_group:=rg-$(org_name)
 org_acr:=$(shell echo """acr$(org-lc)$(oaks)""" | cut -c1-45 | tr A-Z a-z)
 org_acr_login_server:=$(org_acr).azurecr.io
 org_azurefrontdoor:=afd-$(org_name)
-org_keyvault:=kv-$(org_name)
+org_keyvault:=kv-$(org-lc)
 org_lawks:=lawks-$(org_name)
 
 # project configuration
