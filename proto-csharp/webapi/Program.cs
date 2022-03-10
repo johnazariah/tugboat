@@ -59,7 +59,7 @@ namespace GeneratedProjectName.WebApi
                         .Configure((webHostBuilderContext, applicationBuilder) =>
                             {
                                 var hostEnv = webHostBuilderContext.HostingEnvironment;
-                                var swaggerUri = "/swagger/v1/swagger.json";
+                                var swaggerUri = "./v1/swagger.json";
                                 var swaggerName = $"{apiInfo.Title} {apiInfo.Version}";
 
                                 var builder = hostEnv.IsDevelopment() ? applicationBuilder.UseDeveloperExceptionPage() : applicationBuilder;
