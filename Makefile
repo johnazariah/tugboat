@@ -1,4 +1,4 @@
-LibraryVersion:=0.0.7
+LibraryVersion:=0.0.12
 NugetApiKey:=
 
 source:=

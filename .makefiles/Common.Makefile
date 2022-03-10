@@ -43,8 +43,41 @@ init : git-init
 git-init :
 	@echo registering $(git_username) [$(git_email)]
 	git init
-	git config user.email $(git_email)
-	git config user.name  $(git_username)
+	git config user.email                                   $(git_email)
+	git config user.name                                    "$(git_username)"
+	git config diff.astextplain.textconv                     astextplain
+	git config filter.lfs.clean                             "git-lfs clean -- %f"
+	git config filter.lfs.smudge                            "git-lfs smudge -- %f"
+	git config filter.lfs.process                           "git-lfs filter-process"
+	git config filter.lfs.required                           true
+	git config http.sslbackend                               schannel
+	git config core.autocrlf                                 true
+	git config core.fscache                                  true
+	git config core.symlinks                                 true
+	git config core.editor                                   vim
+	git config core.autocrlf                                 true
+	git config core.repositoryformatversion                  0
+	git config core.filemode                                 true
+	git config core.bare                                     false
+	git config core.logallrefupdates                         true
+	git config core.ignorecase                               true
+	git config pull.rebase                                   true
+	git config init.defaultbranch                            main
+	git config alias.lga                                    "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
+	git config alias.lg                                     "lga -20"
+	git config alias.ca                                     "commit -a"
+	git config alias.ci                                     "commit"
+	git config alias.st                                     "status"
+	git config alias.co                                     "checkout"
+	git config alias.br                                     "branch"
+	git config alias.fop                                    "fetch origin --prune"
+	git config alias.cob                                    "checkout -b"
+	git config alias.rom                                    "rebase origin/main"
+	git config alias.new                                    "!git init && git symbolic-ref HEAD refs/heads/main"
+	git config alias.alias                                  "!git config --get-regexp ^alias\. | sed -e s/^alias\.// -e s/\ /\ =\ /"
+	git config branch.main.remote                           "origin"
+	git config branch.main.merge                            "refs/heads/main"
+	git config credential.https://dev.azure.com.usehttppath  true
 	git add .
 	git commit -m "Initial commit of $(project-lc)"
 	git branch -m main

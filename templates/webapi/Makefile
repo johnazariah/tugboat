@@ -1,7 +1,4 @@
-# WINDOWS
-#
-# We'll use some Unix commands here: install git bash with all Unix commands on the PATH
-# We'll need `make`: run `choco install make`
+SHELL := '/bin/bash'
 
 -include .config/git.cfg
 -include .config/subscription.cfg
