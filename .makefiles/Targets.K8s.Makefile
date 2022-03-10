@@ -13,6 +13,7 @@ k8s-upgrade : k8s-replace-image-tag k8s-apply
 
 k8s-apply : k8s-replace-image-tag
 	kubectl apply -f k8s-deployment.yml
+	/bin/sh deploy-ingress.sh $(project-lc)
 
 k8s-status :
 	kubectl get all
@@ -31,6 +32,12 @@ k8s-replace-image-tag :
 		 s|{image-tag}|$(image_tag)|g;\
 		 s|{org-name}|$(org-lc)|g;"\
 		k8s-deployment.ymlt > k8s-deployment.yml
+	sed -e \
+		"s|{image-name}|$(container_name)|g;\
+		 s|{project-name}|$(project-lc)|g;\
+		 s|{image-tag}|$(image_tag)|g;\
+		 s|{org-name}|$(org-lc)|g;"\
+		k8s-ingress.ymlt > k8s-ingress.yml
 
 k8s-deploy-dashboard :
 	kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
