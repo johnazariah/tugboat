@@ -1,6 +1,6 @@
 #overrides from .cfg files
 
-org                 ?=evergreen
+org                 ?=GeneratedProjectNameOrg
 org_region          ?=westus
 
 project             ?=GeneratedProjectName

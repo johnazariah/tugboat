@@ -153,10 +153,12 @@ copy-appl-tests.% :
 	$(MAKE) src_project_file=appl-tests/appl-tests.$(projsuffix) dest_project_file=$*-$(lang)/appl-tests/appl-tests.$(projsuffix) replace-project-reference-with-nuget-reference
 	@echo
 
-copy-templates.% : makefiles=$(foreach f,$(wildcard $(templates_root)/$*/.makefiles/*.Makefile),$(notdir $(f)))
+copy-templates.% : makefiles=$(foreach f,$(wildcard .makefiles/*.Makefile),$(notdir $(f)))
 copy-templates.% : 
 	@echo Copying Templates For $* [$(lang)]
 	cp -rv $(templates_root)/$*/. $(copy_target_root)/$*-$(lang)
+	cp -rv .makefiles $(copy_target_root)/$*-$(lang)
+	cp -rv .config $(copy_target_root)/$*-$(lang)
 	@echo
 	@echo Fixing up Language Specific Suffixes
 	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Makefile                 template=$* replace-pattern
