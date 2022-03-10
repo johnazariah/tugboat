@@ -3,7 +3,7 @@ proj-cleanup:
 	- az group delete --name $(proj_resource_group) --yes
 	@echo Completed cleaning up project resources
 
-proj-setup : proj-setup-rg proj-setup-aks proj-setup-frontdoor
+proj-setup : proj-setup-rg proj-setup-aks proj-setup-frontdoor proj-setup-awg-nsgs
 	@echo Completed setting up project resources
 
 proj-setup-rg :
@@ -84,6 +84,39 @@ proj-setup-frontdoor :
 		--link-to-default-domain Disabled \
 		--forwarding-protocol HttpOnly
 	@echo
+
+proj-setup-awg-nsgs : mc_rg = $(shell az aks show -g $(proj_resource_group) -n $(proj_cluster) --query nodeResourceGroup --output tsv)
+proj-setup-awg-nsgs : 
+	- az network nsg create \
+		--resource-group $(mc_rg) \
+		--name $(proj_agic_nsg_name) \
+		--location australiaeast
+
+	# AllowGatewayManagerInbound
+	- az network nsg rule create \
+		--name AllowGatewayManagerInbound \
+		--direction Inbound \
+		--resource-group $(mc_rg) \
+		--nsg-name $(proj_agic_nsg_name) \
+		--priority 300 \
+		--destination-port-ranges 65200-65535 \
+		--protocol TCP \
+		--source-address-prefixes GatewayManager \
+		--destination-address-prefixes "*" \
+		--access Allow
+
+	# AllowAzureFrontDoor.BackendInbound
+	- az network nsg rule create \
+		--name AllowAzureFrontDoor.Backend \
+		--direction Inbound \
+		--resource-group $(mc_rg) \
+		--nsg-name $(proj_agic_nsg_name) \
+		--priority 200 \
+		--destination-port-ranges 443 80 \
+		--protocol TCP \
+		--source-address-prefixes AzureFrontDoor.Backend \
+		--destination-address-prefixes VirtualNetwork \
+		--access Allow
 
 proj-prepare-aks : proj-register-provider proj-install-cli proj-get-credentials proj-export-config
 

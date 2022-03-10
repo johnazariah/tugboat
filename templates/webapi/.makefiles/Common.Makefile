@@ -21,6 +21,7 @@ proj_resource_group:=rg-$(proj_name)
 proj_cluster:=aks-$(project-lc)
 proj_appgateway:=agw-$(project-lc)
 proj_acr_sp:=sp-$(proj_name)
+proj_agic_nsg_name:=nsg-agic-$(project-lc)
 
 #github configuration
 github_repo           ?=$(org-lc)-$(project-lc)
