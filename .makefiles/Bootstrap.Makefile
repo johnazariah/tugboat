@@ -24,7 +24,7 @@ bootstrap-org : list-config org-setup org-login-acr
 	@echo Run the following command to bootstrap your project
 	@echo 	make bootstrap-project
 
-bootstrap-project : list-config aks-acr-login proj-setup proj-prepare-aks gh-setup
+bootstrap-project : list-config aks-acr-login proj-setup proj-prepare-aks
 	@echo Project $(project) bootstrapped and deployed!
 	@echo
 	@echo Run the following command to bootstrap your project
