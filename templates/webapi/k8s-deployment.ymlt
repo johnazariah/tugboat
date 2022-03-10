@@ -5,7 +5,7 @@ metadata:
   labels:
     serviceId: {project-name}-{image-tag}-deployment
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: {project-name}-{image-tag}-pod
