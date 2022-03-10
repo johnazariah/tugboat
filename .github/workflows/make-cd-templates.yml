@@ -1,16 +1,21 @@
-name: Build & Push UniversalSilo Templates Package
+name: Build & Push Tugboat Templates Package
 on:
   push:
     tags:
       - 'tpl*'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Check Out Code
+      uses: actions/checkout@v2
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
+
     - name: Build, Pack and Push Templates
       run: make LibraryVersion=${GITHUB_REF##*/tpl} NugetApiKey=${{secrets.NUGET_API_KEY}} push-template-pack

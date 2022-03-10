@@ -1,18 +1,23 @@
-name: Build & Push UniversalSilo Nuget Package
+name: Build & Push Tugboat Library Package
 
 on:
   push:
     tags:
       - 'lib*'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Check Out Code
+      uses: actions/checkout@v2
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
+
     - name: Build, Pack and Push Library
       run: make LibraryVersion=${GITHUB_REF##*/lib} NugetApiKey=${{secrets.NUGET_API_KEY}} push-library
 
