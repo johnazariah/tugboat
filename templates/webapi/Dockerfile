@@ -6,6 +6,7 @@ RUN dotnet restore "/src/GeneratedProjectName/GeneratedProjectName._PROJ_SUFFIX_
 RUN dotnet build --no-restore "/src/GeneratedProjectName/GeneratedProjectName._PROJ_SUFFIX_" -c ${config}
 RUN dotnet test --no-build "/src/GeneratedProjectName/GeneratedProjectName._PROJ_SUFFIX_" -c ${config}
 RUN dotnet publish --no-build  "/src/GeneratedProjectName/GeneratedProjectName._PROJ_SUFFIX_" -c ${config} -o /app
+COPY wwwroot /app/wwwroot
 
 # container to run the server from
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS release

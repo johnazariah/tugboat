@@ -5,7 +5,7 @@ metadata:
   labels:
     serviceId: {project-name}-{image-tag}-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: {project-name}-{image-tag}-pod
@@ -20,11 +20,11 @@ spec:
         image: {image-name}
         resources:
           limits:
-            memory: "512Mi"
-            cpu: "1000m"
-          requests:
-            memory: "128Mi"
+            memory: "768Mi"
             cpu: "500m"
+          requests:
+            memory: "32Mi"
+            cpu: "100m"
         env:
           - name: POD_NAMESPACE
             valueFrom:

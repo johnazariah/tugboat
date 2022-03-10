@@ -1,20 +1,23 @@
 ﻿namespace GeneratedProjectName.WebApi
 
-open Microsoft.AspNetCore.Builder
-open Microsoft.AspNetCore.Hosting
-open Microsoft.AspNetCore.ResponseCompression
+open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Diagnostics.HealthChecks
 open Microsoft.Extensions.Hosting
+open Microsoft.Extensions.Logging
+open Microsoft.Extensions.FileProviders
 open Microsoft.OpenApi.Models
+open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.Diagnostics.HealthChecks
+open Microsoft.AspNetCore.Hosting
+open Microsoft.AspNetCore.Http
+open Microsoft.AspNetCore.ResponseCompression
 open System
+open System.Collections.Generic
 open System.IO
 open System.IO.Compression
 open System.Reflection
 open System.Text.Json.Serialization
-open Microsoft.Extensions.Configuration
-open Microsoft.AspNetCore.Diagnostics.HealthChecks
-open Microsoft.Extensions.Diagnostics.HealthChecks
-open Microsoft.AspNetCore.Http
 
 [<AutoOpen>]
 module WebApiConfigurator =
@@ -54,7 +57,7 @@ module WebApiConfigurator =
         member this.ConfigureWebApi() : IHostBuilder =
             let configureApp (webHostBuilderContext : WebHostBuilderContext) (applicationBuilder : IApplicationBuilder) =
                 let hostEnv = webHostBuilderContext.HostingEnvironment
-                let swaggerUri  = "/swagger/v1/swagger.json"
+                let swaggerUri  = "./v1/swagger.json"
                 let swaggerName = sprintf "%s %s" apiInfo.Title apiInfo.Version
 
                 let builder =
@@ -65,9 +68,8 @@ module WebApiConfigurator =
                 if useHttpsRedirection then
                     ignore <| builder.UseHttpsRedirection()
 
-                builder
-                    .UseDefaultFiles()
-                    .UseStaticFiles()
+                builder                    
+                    .UseFileServer(new FileServerOptions(FileProvider =  new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")), RequestPath = ""))
                     .UseSwagger()
                     .UseSwaggerUI(fun options -> options.SwaggerEndpoint(swaggerUri, swaggerName))
                     .UseResponseCompression()

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -53,53 +54,49 @@ namespace GeneratedProjectName.WebApi
         };
 
         public static IHostBuilder ConfigureWebApi(this IHostBuilder hostBuilder) =>
-            hostBuilder
-                .ConfigureWebHostDefaults(webHostBuilder =>
-                    webHostBuilder
-                        .Configure((webHostBuilderContext, applicationBuilder) =>
-                            {
-                                var hostEnv = webHostBuilderContext.HostingEnvironment;
-                                var swaggerUri = "./v1/swagger.json";
-                                var swaggerName = $"{apiInfo.Title} {apiInfo.Version}";
+            hostBuilder.ConfigureWebHostDefaults(webHostBuilder => 
+                webHostBuilder.Configure((webHostBuilderContext, applicationBuilder) => {
+                    var hostEnv = webHostBuilderContext.HostingEnvironment;
+                    var swaggerUri = "./v1/swagger.json";
+                    var swaggerName = $"{apiInfo.Title} {apiInfo.Version}";
 
-                                var builder = hostEnv.IsDevelopment() ? applicationBuilder.UseDeveloperExceptionPage() : applicationBuilder;
-                                if (useHttpsRedirection) builder.UseHttpsRedirection();
+                    var builder = hostEnv.IsDevelopment() ? applicationBuilder.UseDeveloperExceptionPage() : applicationBuilder;
+                    if (useHttpsRedirection) builder.UseHttpsRedirection();
 
-                                builder
-                                    .UseDefaultFiles()
-                                    .UseStaticFiles()
-                                    .UseSwagger()
-                                    .UseSwaggerUI(options => options.SwaggerEndpoint(swaggerUri, swaggerName))
-                                    .UseResponseCompression()
-                                    .UseRouting()
-                                    .UseAuthorization()
-                                    .UseEndpoints(endpoints =>
-                                        {
-                                            endpoints.MapControllers();
-                                            endpoints.MapHealthChecks(
-                                                "/health",
-                                                new HealthCheckOptions()
-                                                {
-                                                    AllowCachingResponses = false,
-                                                    ResultStatusCodes = healthResultStatusCodes
-                                                });
-                                        });
-                            })
-                        .UseSetting(WebHostDefaults.ApplicationKey, Assembly.GetEntryAssembly().GetName().Name))
-                .ConfigureServices((hostBuilderContext, services) =>
-                {
+                    builder
+                        .UseFileServer(new FileServerOptions() {
+                            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
+                            RequestPath = "",
+                        })
+                        .UseSwagger()
+                        .UseSwaggerUI(options => options.SwaggerEndpoint(swaggerUri, swaggerName))
+                        .UseResponseCompression()
+                        .UseRouting()
+                        .UseAuthorization()
+                        .UseEndpoints(endpoints => {
+                            endpoints.MapControllers();
+                            endpoints.MapHealthChecks(
+                                "/health",
+                                new HealthCheckOptions()
+                                {
+                                    AllowCachingResponses = false,
+                                    ResultStatusCodes = healthResultStatusCodes
+                                });
+                        });
+                    })
+                    .UseSetting(WebHostDefaults.ApplicationKey, Assembly.GetEntryAssembly().GetName().Name))
+                .ConfigureServices((hostBuilderContext, services) => {
                     services
                         .AddControllers()
                         .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
                     var xmlFile = $"{Assembly.GetEntryAssembly().GetName().Name}.xml";
                     var xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, xmlFile);
-                    services.AddSwaggerGen(options =>
-                        {
-                            options.SwaggerDoc(apiInfo.Version, apiInfo);
-                            options.EnableAnnotations();
-                            options.IncludeXmlComments(xmlPath);
-                        });
+                    services.AddSwaggerGen(options => {
+                        options.SwaggerDoc(apiInfo.Version, apiInfo);
+                        options.EnableAnnotations();
+                        options.IncludeXmlComments(xmlPath);
+                    });
 
                     services
                         .AddHealthChecks();

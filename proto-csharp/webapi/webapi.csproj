@@ -35,6 +35,15 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.3" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="static\css\" />
+    <Folder Include="static\img\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="static\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Library.Tugboat\Library.Tugboat.csproj" />
   </ItemGroup>
   <ItemGroup>

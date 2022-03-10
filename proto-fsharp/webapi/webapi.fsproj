@@ -53,6 +53,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="static\css\" />
+    <Folder Include="static\img\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="static\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\appl-controllers\appl-controllers.fsproj" />
   </ItemGroup>
 </Project>

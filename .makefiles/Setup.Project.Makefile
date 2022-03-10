@@ -26,15 +26,14 @@ proj-setup-aks :
 		--resource-group $(proj_resource_group)\
 		--location $(proj_region)\
 		--node-vm-size standard_d2s_v5\
-		--node-count 2\
+		--node-count 3\
+		--min-count 2 --max-count 5 --enable-cluster-autoscaler\
 		--network-plugin azure\
 		--enable-managed-identity\
-		--enable-addons monitoring,ingress-appgw\
+		--enable-addons monitoring, ingress-appgw\
 		--workspace-resource-id $(lawks_id)\
-		--appgw-name $(proj_appgateway)\
-		--appgw-subnet-cidr "10.2.0.0/16"\
-		--attach-acr $(acr_id)\
-		--generate-ssh-keys
+		--appgw-name $(proj_appgateway) --appgw-subnet-cidr "10.2.0.0/16"\
+		--attach-acr $(acr_id)
 	@echo
 
 proj-setup-frontdoor : agw_resource_id = $(shell az aks show --name $(proj_cluster) --resource-group $(proj_resource_group) --query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId" --output tsv )
