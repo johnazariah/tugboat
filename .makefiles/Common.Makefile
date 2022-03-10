@@ -50,7 +50,6 @@ git-init :
 	git config filter.lfs.smudge                            "git-lfs smudge -- %f"
 	git config filter.lfs.process                           "git-lfs filter-process"
 	git config filter.lfs.required                           true
-	git config http.sslbackend                               schannel
 	git config core.autocrlf                                 true
 	git config core.fscache                                  true
 	git config core.symlinks                                 true

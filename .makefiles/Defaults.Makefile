@@ -1,5 +1,5 @@
 #overrides from .cfg files
-org                 ?=$(shell echo GeneratedProjectName | cut -c1-15 | tr A-Z a-z)org$(shell echo $$RANDOM)
+org                 ?=$(shell echo GeneratedProjectName | cut -c1-15 | tr A-Z a-z)org
 org_region          ?=westus
 
 project             ?=GeneratedProjectName

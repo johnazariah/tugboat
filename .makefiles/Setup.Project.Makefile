@@ -30,10 +30,11 @@ proj-setup-aks :
 		--min-count 2 --max-count 5 --enable-cluster-autoscaler\
 		--network-plugin azure\
 		--enable-managed-identity\
-		--enable-addons monitoring, ingress-appgw\
+		--enable-addons monitoring,ingress-appgw\
 		--workspace-resource-id $(lawks_id)\
 		--appgw-name $(proj_appgateway) --appgw-subnet-cidr "10.2.0.0/16"\
-		--attach-acr $(acr_id)
+		--attach-acr $(acr_id)\
+		--generate-ssh-keys
 	@echo
 
 proj-setup-frontdoor : agw_resource_id = $(shell az aks show --name $(proj_cluster) --resource-group $(proj_resource_group) --query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId" --output tsv )
@@ -77,11 +78,11 @@ proj-setup-frontdoor :
 		--https-redirect Enabled \
 		--origin-group $(proj_name) \
 		--https-redirect Enabled \
-		--supported-protocols Https \
+		--supported-protocols Http Https \
 		--patterns-to-match "/$(project-lc)/*" \
 		--origin-path "/$(project-lc)/" \
 		--link-to-default-domain Disabled \
-		--forwarding-protocol HttpOnly
+		--forwarding-protocol MatchRequest
 	@echo
 
 proj-setup-awg-nsgs : mc_rg = $(shell az aks show -g $(proj_resource_group) -n $(proj_cluster) --query nodeResourceGroup --output tsv)
