@@ -13,7 +13,6 @@ gh-wireup-azure: tenant   =$(shell az ad sp list --display-name $(proj_acr_sp) -
 gh-wireup-azure: acr_id   =$(shell az acr show --name $(org_acr) --resource-group $(org_resource_group) --query "id" --output tsv)
 gh-wireup-azure: aks_id   =$(shell az aks show --name $(proj_cluster) --resource-group $(proj_resource_group) --query "id" --output tsv)
 gh-wireup-azure:
-	- sleep 30
 	- az role assignment create --assignee $(id) --scope $(acr_id) --role "Contributor"
 	- az role assignment create --assignee $(id) --scope $(aks_id) --role "Azure Kubernetes Service Cluster User Role"
 	- az role assignment create --assignee $(id) --scope $(aks_id) --role "Azure Kubernetes Service RBAC Writer"

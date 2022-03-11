@@ -30,7 +30,7 @@ bootstrap-project : list-config aks-acr-login proj-setup proj-prepare-aks
 	@echo Run the following command to bootstrap your project
 	@echo 	make bootstrap-github
 
-bootstrap-github : list-config gh-setup
+bootstrap-github : sleep-60 list-config gh-setup
 	@echo Github repository setup!
 	@echo
 	@echo Make changes to your code, commit and push to your main branch on Github and

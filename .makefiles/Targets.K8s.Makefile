@@ -16,14 +16,18 @@ k8s-apply : k8s-replace-image-tag
 	/bin/sh deploy-ingress.sh $(project-lc)
 
 k8s-status :
-	kubectl get all
+	- kubectl get namespace
+	- kubectl get all
+	- kubectl get ingress
 
 k8s-dashboard : k8s-deploy-dashboard k8s-setup-rbac
 	kubectl proxy
 
 k8s-create-namespace :
 	- kubectl create namespace $(k8s_namespace)
-	kubectl config set-context --current --namespace $(k8s_namespace)
+
+k8s-set-default-namespace:
+	- kubectl config set-context --current --namespace $(k8s_namespace)
 
 k8s-replace-image-tag :
 	sed -e \

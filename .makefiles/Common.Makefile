@@ -1,4 +1,4 @@
-# 
+#
 # Resources shall be named according to convention:
 # https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming
 #
@@ -32,6 +32,7 @@ git_branch            ?=$(subst /,--,$(shell git rev-parse --abbrev-ref HEAD))
 git_latest_hash       ?=$(shell git log -1 --pretty=format:"%h")
 image_tag             ?=$(git_latest_hash)
 container_name        ?=$(org_acr_login_server)/$(project-lc):$(image_tag)
+container_latest      ?=$(org_acr_login_server)/$(project-lc):latest
 
 # k8s namespace
 k8s_namespace         ?=green
@@ -113,3 +114,6 @@ list-config:
 	@echo "proj_region                    : "[$(proj_region)]
 	@echo "proj_cluster                   : "[$(proj_cluster)]
 	@echo
+
+sleep-% :
+	- sleep $*

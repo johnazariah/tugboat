@@ -82,7 +82,7 @@ proj-setup-frontdoor :
 		--patterns-to-match "/$(project-lc)/*" \
 		--origin-path "/$(project-lc)/" \
 		--link-to-default-domain Disabled \
-		--forwarding-protocol MatchRequest
+		--forwarding-protocol Http
 	@echo
 
 proj-setup-awg-nsgs : mc_rg = $(shell az aks show -g $(proj_resource_group) -n $(proj_cluster) --query nodeResourceGroup --output tsv)

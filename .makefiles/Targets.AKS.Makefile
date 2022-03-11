@@ -27,3 +27,9 @@ acr-build :
 	--image $(container_name) \
 	--file Dockerfile \
 	.
+
+	az acr build \
+	--registry $(org_acr) \
+	--image $(container_latest) \
+	--file Dockerfile \
+	.
