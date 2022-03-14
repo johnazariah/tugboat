@@ -118,7 +118,7 @@ proj-setup-awg-nsgs :
 		--destination-address-prefixes VirtualNetwork \
 		--access Allow
 
-proj-prepare-aks : proj-register-provider proj-install-cli proj-get-credentials proj-export-config
+proj-prepare-aks : proj-register-provider proj-install-cli proj-get-credentials proj-export-config k8s-set-default-namespace
 
 proj-register-provider :
 	@echo Registering OperationsManagement, OperationalInsights and Cdn

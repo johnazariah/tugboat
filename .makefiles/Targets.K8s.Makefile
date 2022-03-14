@@ -5,7 +5,7 @@
 k8s-cleanup :
 	- kubectl delete namespace $(k8s_namespace)
 
-k8s-deploy : k8s-create-namespace k8s-upgrade
+k8s-deploy : k8s-create-namespace k8s-set-default-namespace k8s-upgrade
 	@echo Clean-deployed to $(k8s_namespace)
 
 k8s-upgrade : k8s-replace-image-tag k8s-apply
