@@ -32,17 +32,18 @@ proj-setup-aks :
 		--enable-managed-identity\
 		--enable-addons monitoring,ingress-appgw\
 		--workspace-resource-id $(lawks_id)\
-		--appgw-name $(proj_appgateway) --appgw-subnet-cidr "10.2.0.0/16"\
+		--appgw-name $(proj_appgateway) --appgw-subnet-cidr "10.225.0.0/16"\
 		--attach-acr $(acr_id)\
 		--generate-ssh-keys
 	@echo
+# --appgw-name $(proj_appgateway) --appgw-subnet-cidr "10.2.0.0/16"
 
 proj-setup-frontdoor : agw_resource_id = $(shell az aks show --name $(proj_cluster) --resource-group $(proj_resource_group) --query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId" --output tsv )
 proj-setup-frontdoor : pip_resource_id = $(shell az network application-gateway show --ids $(agw_resource_id) --query "frontendIpConfigurations[?publicIpAddress.id != '' && type == 'Microsoft.Network/applicationGateways/frontendIPConfigurations'] | [0].publicIpAddress.id" --output tsv)
 proj-setup-frontdoor : pip_ip          = $(shell az network public-ip show --ids $(pip_resource_id) --query "ipAddress" --output tsv)
 proj-setup-frontdoor :
 	@echo Starting to set up project Azure Front Door profile
-	@echo 
+	@echo
 	@echo Retrieved AGW Id $(agw_resource_id), \
 		PIP Id $(pip_resource_id) \
 		and PIP IP $(pip_ip)
@@ -86,7 +87,7 @@ proj-setup-frontdoor :
 	@echo
 
 proj-setup-awg-nsgs : mc_rg = $(shell az aks show -g $(proj_resource_group) -n $(proj_cluster) --query nodeResourceGroup --output tsv)
-proj-setup-awg-nsgs : 
+proj-setup-awg-nsgs :
 	- az network nsg create \
 		--resource-group $(mc_rg) \
 		--name $(proj_agic_nsg_name) \

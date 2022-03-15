@@ -113,6 +113,7 @@ list-config:
 	@echo "proj_resource_group            : "[$(proj_resource_group)]
 	@echo "proj_region                    : "[$(proj_region)]
 	@echo "proj_cluster                   : "[$(proj_cluster)]
+	@echo "proj_acr_sp                    : "[$(proj_acr_sp)]
 	@echo
 
 sleep-% :

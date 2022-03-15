@@ -30,18 +30,30 @@ bootstrap-project : list-config aks-acr-login proj-setup proj-prepare-aks
 	@echo Run the following command to bootstrap your project
 	@echo 	make bootstrap-github
 
-bootstrap-github : sleep-60 list-config gh-setup
+bootstrap-github : list-config gh-setup
 	@echo Github repository setup!
 	@echo
 	@echo Make changes to your code, commit and push to your main branch on Github and
 	@echo 	they will automatically be built and deployed!
 	@echo
+	$(MAKE) url
 
 manual-firstbuild: list-config docker-build docker-push k8s-deploy k8s-status
 	@echo Project deployed to the cluster!
 	@echo
 	@echo To build and deploy your project as part of your local-development workflow, run
 	@echo 	make build
+	$(MAKE) url
 
 manual-build: list-config docker-build docker-push k8s-upgrade k8s-status
 	@echo Changes pushed to the cluster!
+	$(MAKE) url
+
+url : hostname=$(shell az afd endpoint show --resource-group $(org_resource_group) --endpoint-name $(org_azurefrontdoor) --profile-name $(org_azurefrontdoor) --query hostName -o tsv)
+url : url=https://$(hostname)/$(project)/$(image_tag)/index.html
+url :
+	@echo
+	@echo The landing page for the latest commit ($(image_tag)) is found at: $(url)
+	@echo
+
+status: k8s-status url
