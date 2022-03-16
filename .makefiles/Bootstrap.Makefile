@@ -2,20 +2,21 @@ hello :
 	@echo Welcome to the GeneratedProjectName Project
 	@echo
 	@echo Please update your configuration details in the '.config' directory
+	@echo Please modify any defaults in the 'Defaults.Makefile' file
 	@echo
 	@echo First login and set the default subscription by running:
-	@echo 	make bootstrap-init [-e sub=the-azure-subscription-you-want-to-use]
+	@echo 	make bootstrap-init
 	@echo
 
 bootstrap-init : sub ?=Please specify Azure subscription id to use
-bootstrap-init: init az-login az-sub-set
+bootstrap-init : init az-login az-sub-set
 	@echo Logged in
 	@echo
 	@echo If this is your very first time building a Tugboat project, run
-	@echo 	make bootstrap-org [-e org=the-organization-name-you-want-to-use]
+	@echo 	make bootstrap-org
 	@echo
 	@echo If you have previously set up an organization and want to add this project to it, run
-	@echo 	make bootstrap-project [-e project=the-project-name-you-want-to-use]
+	@echo 	make bootstrap-project
 	@echo
 
 bootstrap-org : list-config org-setup org-login-acr
@@ -38,6 +39,12 @@ bootstrap-github : list-config gh-setup
 	@echo
 	$(MAKE) url
 
+bootstrap-env : az-login az-sub-set gh-login aks-acr-login proj-prepare-aks status
+	@echo Environment bootstrapped
+	@echo
+	@echo Make changes to your code, commit and push to your main branch on Github and
+	@echo 	they will automatically be built and deployed!
+
 manual-firstbuild: list-config docker-build docker-push k8s-deploy k8s-status
 	@echo Project deployed to the cluster!
 	@echo
@@ -53,7 +60,7 @@ url : hostname=$(shell az afd endpoint show --resource-group $(org_resource_grou
 url : url=https://$(hostname)/$(project)/$(image_tag)/index.html
 url :
 	@echo
-	@echo The landing page for the latest commit ($(image_tag)) is found at: $(url)
+	@echo The landing page for the latest commit \[$(image_tag)\] is found at: $(url)
 	@echo
 
 status: k8s-status url
