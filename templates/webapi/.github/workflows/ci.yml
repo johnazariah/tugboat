@@ -16,11 +16,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
-    - name: build .NET
-      run: make dotnet-build
-    - name: test .NET
-      run: make dotnet-test
-    - name: login to Azure
+    - name: Build & Test .NET Application
+      run: make dotnet-build dotnet-test
+    - name: Login to Azure
       run: |
         az login \
         --service-principal \

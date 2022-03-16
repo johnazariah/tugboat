@@ -1,8 +1,8 @@
 hello :
 	@echo Welcome to the GeneratedProjectName Project
 	@echo
-	@echo Please update your configuration details in the '.config' directory
-	@echo Please modify any defaults in the 'Defaults.Makefile' file
+	@echo Please provide your configuration secrets in the '.config' directory. These files _will not_ get checked-in to source control.
+	@echo Please modify any defaults in the 'Defaults.Makefile' file. These changes _will_ get picked up by the CI/CD pipeline.
 	@echo
 	@echo First login and set the default subscription by running:
 	@echo 	make bootstrap-init
