@@ -32,7 +32,7 @@ Templates                                         Short Name                   L
 Console Application                               console                      [C#], F#, VB      Common/Console
 Class library                                     classlib                     [C#], F#, VB      Common/Library
 ...
-Tugboat: WebAPI                                   tugboat-webapi               [C#], F#          Tugboat/WebApi Direct Client
+Tugboat: WebAPI                                   dotnet-webapi               [C#], F#          Tugboat/WebApi Direct Client
 ...
 
 Examples:
@@ -45,7 +45,7 @@ Examples:
 ## 2. Create an application with a name like `HelloTugboat`
 
 ```shell
-$ dotnet new tugboat-webapi --name HelloTugboat
+$ dotnet new dotnet-webapi --name HelloTugboat
 The template "Tugboat: WebAPI" was created successfully.
 ```
 
@@ -54,7 +54,7 @@ This will create a fully-functional **C#** application in the `HelloTugboat` fol
 You can also choose to generate the project in **F#** by using the following command:
 
 ```shell
-$ dotnet new tugboat-webapi --name HelloTugboat --language F#
+$ dotnet new dotnet-webapi --name HelloTugboat --language F#
 The template "Tugboat: WebAPI" was created successfully.
 ```
 

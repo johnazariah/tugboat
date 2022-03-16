@@ -16,12 +16,3 @@ az-sub-show:
 
 az-show-regions:
 	az account list-locations --query "sort_by([].{Location:name}, &Location)" -o table
-
-az-new-all : az-new-org az-new-proj
-	@echo
-
-az-new-org : org-setup
-	@echo Completed setting up new organization [$(org)]]
-
-az-new-proj :  paks-setup paks-prepare-aks org-login-acr
-	@echo Completed setting up new project [$(project)] in organization [$(org)]

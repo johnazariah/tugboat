@@ -9,8 +9,15 @@ aks-acr-login : acr_login_token =$(shell az acr login --name $(org_acr) --expose
 aks-acr-login :
 	- docker login $(org_acr_login_server) -u 00000000-0000-0000-0000-000000000000 -p "$(acr_login_token)"
 
-aks-set-secrets : k8s-create-namespace
+aks-set-secrets : k8s-create-namespace aks-set-storage-secret
 	@echo Completed setting up secrets
+
+aks-set-storage-secret : proj_storage_connection_string=$(shell az storage account show-connection-string --name $(proj_storage) --resource-group $(proj_resource_group) --query connectionString -o tsv)
+aks-set-storage-secret :
+	@echo Starting to set up storage connection string as a secrets
+	kubectl create secret generic $(proj_storage_secret)\
+		--namespace $(k8s_namespace)\
+		--from-literal=connection-string=$(proj_storage_connection_string)
 
 aks-prepare : aks-acr-login aks-switch-context aks-set-secrets
 	@echo Prepared context to run against remote AKS!

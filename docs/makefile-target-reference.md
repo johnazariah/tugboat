@@ -84,7 +84,7 @@ You will have to ensure that `Setup.cfg` has proper values in it for the "organi
 
 - `make az-new-org` should only be run _once per organization name_. It sets up a resource group and an Azure Container Registry that can be shared against many projects. Additional project-shareable resources like an Analytics Workspace are also set up here. 
 - `make az-new-proj` should only be run _once per project_. It sets up a resource group, an AKS cluster, and a storage account for use _only_ by this project. When this target is run, the script will emit two values:
-    1. A storage connection string. Please edit `Setup.cfg` and put this value _carefully_ as the value of `paks_storage_connection_string`.
+    1. A storage connection string. Please edit `Setup.cfg` and put this value _carefully_ as the value of `proj_storage_connection_string`.
     1. A token to be used to login to the Azure Container Registery. Please edit `Setup.cfg` and put this value _carefully_ as the value of `oaks_acr_login_token`. This is a _long_ string with no line breaks.
 
 You can run the following targets in the "Project" terminal, as they do not have any `az cli` dependencies.

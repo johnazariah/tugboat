@@ -1,0 +1,33 @@
+name: CI/CD
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+jobs:
+  build-and-test-solution:
+    name: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+    - name: Build & Test .NET Application
+      run: make dotnet-build dotnet-test
+    - name: Login to Azure
+      run: |
+        az login \
+        --service-principal \
+        --username ${{ secrets.service_principal_id }} \
+        --password ${{ secrets.service_principal_password }} \
+        --tenant   ${{ secrets.service_principal_tenant }}
+    - name: ACR build
+      run: make acr-build
+    - name: Get AKS Credentials
+      run: make aks-get-credentials
+    - name: Deploy to AKS
+      run: make k8s-deploy

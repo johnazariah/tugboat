@@ -31,10 +31,11 @@ k8s-set-default-namespace:
 
 k8s-replace-image-tag :
 	sed -e \
-		"s|{image-name}|$(container_name)|g;\
+		"s|{org-name}|$(org-lc)|g;\
 		 s|{project-name}|$(project-lc)|g;\
 		 s|{image-tag}|$(image_tag)|g;\
-		 s|{org-name}|$(org-lc)|g;"\
+		 s|{image-name}|$(container_name)|g;\
+		 s|{storage-secret-name}|$(proj_storage_secret)|g;"\
 		k8s-deployment.ymlt > k8s-deployment.yml
 	sed -e \
 		"s|{image-name}|$(container_name)|g;\

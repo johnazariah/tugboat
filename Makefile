@@ -25,8 +25,7 @@ language=F\#
 language_name=FSharp
 endif
 
-template-types:=webapi
-project-types:=webapi
+template-types:=dotnet-webapi orleans-directclient
 languages:=csharp fsharp
 
 devenv-image:=westisland/tugboat:latest
@@ -51,7 +50,7 @@ copy:
 # Support BSDTAR which is now native on Windows 10, and which is preferred on Windows even though it is unable to do piping! :-/
 # http://gnuwin32.sourceforge.net/packages/gtar.htm
 	tar -c --exclude bin --exclude obj --exclude .vs --exclude Properties --exclude *.user -f $(target).tar $(source)
-	tar -x --strip-components=2 -C $(target) -f $(target).tar
+	tar -x --strip-components=3 -C $(target) -f $(target).tar
 	- rm -f $(target).tar
 
 replace-pattern :
@@ -132,29 +131,53 @@ copy-template.% : lang=$(subst .,,$(suffix $*))
 copy-template.% : template=$(basename $*)
 copy-template.% :
 	$(MAKE) lang=$(lang) copy-single-template.$(template)
-
-copy-single-template.webapi : copy-single-template.% : copy-common.% copy-appl-controllers.% copy-project.% 
 	@echo Built Template Folder For $* [$(lang)]
-	- rm $(copy_target_root)/$*-$(lang)/GeneratedProjectName/$*.$(projsuffix)
 	@echo
 
-copy-common.% : copy-appl-logic.% copy-appl-tests.% copy-templates.% copy-ignores.% copy-scripts.%
-	@echo Copied Common Components For $* [$(lang)]
+copy-single-template.dotnet-webapi        : copy-single-template.% : copy-project.% copy-templates.% copy-ignores.% copy-scripts.% copy-appl-logic.% copy-appl-tests.% copy-appl-controllers.%
+	@echo
+
+copy-single-template.orleans-directclient : copy-single-template.% : copy-project.% copy-templates.% copy-ignores.% copy-scripts.% copy-grains.% copy-grain-tests.% copy-grain-controllers.%
+	@echo
+
+copy-appl-controllers.% :
+	@echo Copying Application Controllers Project For $* [$(lang)]
+	$(MAKE) source=$(proto_root)-$(lang)/$*/appl-controllers target=$(copy_target_root)/$*-$(lang)/appl-controllers copy
+	$(MAKE) src_project_file=$*/appl-controllers/appl-controllers.$(projsuffix) dest_project_file=$*-$(lang)/appl-controllers/appl-controllers.$(projsuffix) replace-project-reference-with-nuget-reference
 	@echo
 
 copy-appl-logic.% :
 	@echo Copying Application Logic Project For $* [$(lang)]
-	$(MAKE) source=$(proto_root)-$(lang)/appl-logic target=$(copy_target_root)/$*-$(lang)/appl-logic copy
+	$(MAKE) source=$(proto_root)-$(lang)/$*/appl-logic target=$(copy_target_root)/$*-$(lang)/appl-logic copy
+	$(MAKE) src_project_file=$*/appl-logic/appl-logic.$(projsuffix) dest_project_file=$*-$(lang)/appl-logic/appl-logic.$(projsuffix) replace-project-reference-with-nuget-reference
 	@echo
 
 copy-appl-tests.% :
+	@echo Copying Application Tests Project For $* [$(lang)]
+	$(MAKE) source=$(proto_root)-$(lang)/$*/appl-tests target=$(copy_target_root)/$*-$(lang)/appl-tests copy
+	$(MAKE) src_project_file=$*/appl-tests/appl-tests.$(projsuffix) dest_project_file=$*-$(lang)/appl-tests/appl-tests.$(projsuffix) replace-project-reference-with-nuget-reference
+	@echo
+
+copy-grain-controllers.% :
+	@echo Copying Grain Controllers Project For $* [$(lang)]
+	$(MAKE) source=$(proto_root)-$(lang)/$*/grain-controllers target=$(copy_target_root)/$*-$(lang)/grain-controllers copy
+	$(MAKE) src_project_file=$*/grain-controllers/grain-controllers.$(projsuffix) dest_project_file=$*-$(lang)/grain-controllers/grain-controllers.$(projsuffix) replace-project-reference-with-nuget-reference
+	@echo
+
+copy-grains.% :
+	@echo Copying Grains Project For $* [$(lang)]
+	$(MAKE) source=$(proto_root)-$(lang)/$*/grains target=$(copy_target_root)/$*-$(lang)/grains copy
+	$(MAKE) src_project_file=$*/grains/grains.$(projsuffix) dest_project_file=$*-$(lang)/grains/grains.$(projsuffix) replace-project-reference-with-nuget-reference
+	@echo
+
+copy-grain-tests.% :
 	@echo Copying Grain Tests Project For $* [$(lang)]
-	$(MAKE) source=$(proto_root)-$(lang)/appl-tests target=$(copy_target_root)/$*-$(lang)/appl-tests copy
-	$(MAKE) src_project_file=appl-tests/appl-tests.$(projsuffix) dest_project_file=$*-$(lang)/appl-tests/appl-tests.$(projsuffix) replace-project-reference-with-nuget-reference
+	$(MAKE) source=$(proto_root)-$(lang)/$*/grain-tests target=$(copy_target_root)/$*-$(lang)/grain-tests copy
+	$(MAKE) src_project_file=$*/grain-tests/grain-tests.$(projsuffix) dest_project_file=$*-$(lang)/grain-tests/grain-tests.$(projsuffix) replace-project-reference-with-nuget-reference
 	@echo
 
 copy-templates.% : makefiles=$(foreach f,$(wildcard .makefiles/*.Makefile),$(notdir $(f)))
-copy-templates.% : 
+copy-templates.% :
 	@echo Copying Templates For $* [$(lang)]
 	cp -rv $(templates_root)/$*/. $(copy_target_root)/$*-$(lang)
 	cp -rv .makefiles $(copy_target_root)/$*-$(lang)
@@ -173,15 +196,11 @@ copy-templates.% :
 	done
 	@echo
 
-copy-appl-controllers.% :
-	@echo Copying Grain Controllers Project For $* [$(lang)]
-	$(MAKE) source=$(proto_root)-$(lang)/appl-controllers target=$(copy_target_root)/$*-$(lang)/appl-controllers copy
-	@echo
-
 copy-project.% :
 	@echo Copying Project For $* [$(lang)]
-	$(MAKE) source=$(proto_root)-$(lang)/$* target=$(copy_target_root)/$*-$(lang)/GeneratedProjectName copy
-	$(MAKE) src_project_file=$*/$*.$(projsuffix) dest_project_file=$*-$(lang)/GeneratedProjectName/GeneratedProjectName.$(projsuffix) replace-project-reference-with-nuget-reference
+	$(MAKE) source=$(proto_root)-$(lang)/$*/$* target=$(copy_target_root)/$*-$(lang)/GeneratedProjectName copy
+	$(MAKE) src_project_file=$*/$*/$*.$(projsuffix) dest_project_file=$*-$(lang)/GeneratedProjectName/GeneratedProjectName.$(projsuffix) replace-project-reference-with-nuget-reference	
+	- rm $(copy_target_root)/$*-$(lang)/GeneratedProjectName/$*.$(projsuffix)
 	@echo
 
 copy-ignores.% :
@@ -196,7 +215,7 @@ copy-scripts.% :
 	@echo
 
 replace-project-reference-with-nuget-reference :
-	- sed -e "s/<ProjectReference.*Library.Tugboat.csproj\"/<PackageReference Include=\"WestIsland.Tugboat\" Version=\"*\"/g" $(proto_root)-$(lang)/$(src_project_file) > $(copy_target_root)/$(dest_project_file)
+	- sed -e "s/<ProjectReference.*Library.Tugboat.csproj\"/<PackageReference Include=\"WestIsland.Tugboat\" Version=\"*\"/g" $(proto_root)-$(lang)/$*/$(src_project_file) > $(copy_target_root)/$(dest_project_file)
 
 pack-template-pack :
 	$(MAKE) project_path=$(scratch)/build/Tugboat.Templates.csproj package_name=WestIsland.Tugboat.Templates package_version=$(LibraryVersion) pack
@@ -208,7 +227,7 @@ install-template-pack : uninstall-template-pack
 	dotnet new -i WestIsland.Tugboat.Templates.$(LibraryVersion).nupkg
 
 # Template Test Targets
-test-templates : $(foreach l,$(languages),$(foreach t,$(project-types),test-template.$(t).$(l)))
+test-templates : $(foreach l,$(languages),$(foreach t,$(template-types),test-template.$(t).$(l)))
 	@echo Completed Testing Templates
 	@echo
 
@@ -227,7 +246,7 @@ test-dotnet-flow :
 
 create-scratch-project :
 	mkdir -p $(test_install_root)
-	dotnet new tugboat-$(template) -lang $(language) -n $(scratch_proj) -o $(test_install_root)/$(lang)/$(template)
+	dotnet new $(template) -lang $(language) -n $(scratch_proj) -o $(test_install_root)/$(lang)/$(template)
 
 #devenv targets
 devenv-image :

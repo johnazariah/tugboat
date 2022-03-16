@@ -156,7 +156,7 @@ For purposes of clarity, we'll call one of them the "Azure" shell, and the other
             
             When this target is run, the script will emit two values:
 
-            1. A storage connection string. Put this value _carefully_ as the value of `paks_storage_connection_string` in `Setup.cfg`.
+            1. A storage connection string. Put this value _carefully_ as the value of `proj_storage_connection_string` in `Setup.cfg`.
             1. A token to be used to login to the Azure Container Registery. Put this value _carefully_ as the value of `oaks_acr_login_token` in `Setup.cfg`. This is a _long_ string with no line breaks.
 
 1. In the "Project" shell:

@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "identity": "WestIsland.Tugboat.DotnetWebapi._LANGNAME_",
+  "groupIdentity": "WestIsland.Tugboat.DotnetWebapi",
+  "author": "John Azariah",
+  "classifications": [ "Tugboat", ".NET", "WebAPI" ],
+  "name": "Tugboat: .NET WebAPI Host",
+  "description": "A solution with co-hosted .NET app and WebAPI endpoints",
+  "shortName": "dotnet-webapi",
+  "tags": {
+    "language": "_LANG_",
+    "type": "solution"
+  },
+  "sourceName": "GeneratedProjectName",
+  "preferNameDirectory": true
+}
