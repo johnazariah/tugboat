@@ -8,6 +8,17 @@ hello :
 	@echo 	make bootstrap-init
 	@echo
 
+bootstrap-all :  init az-login az-sub-set gh-login bootstrap-org bootstrap-project gh-create-repo gh-wireup-azure
+
+foo:
+	@echo Don''t forget to kick the github build action off for the very first time!
+	@echo
+	@echo https://github.com/$(github_user)/$(github_repo)/actions
+	@echo
+	@echo After the build succeeds, you can see the deployed application and the cluster status by running:
+	@echo    make status
+	@echo
+
 bootstrap-init : sub ?=Please specify Azure subscription id to use
 bootstrap-init : init az-login az-sub-set
 	@echo Logged in

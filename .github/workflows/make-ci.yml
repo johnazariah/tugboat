@@ -44,7 +44,7 @@ jobs:
     strategy:
       matrix:
         lang: [csharp, fsharp]
-        template: [webapi]
+        template: [dotnet-webapi, orleans-directclient]
       fail-fast: false
       max-parallel: 8
 

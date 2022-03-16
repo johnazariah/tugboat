@@ -3,7 +3,7 @@ proj-cleanup:
 	- az group delete --name $(proj_resource_group) --yes
 	@echo Completed cleaning up project resources
 
-proj-setup : proj-setup-rg proj-setup-aks proj-setup-frontdoor proj-setup-awg-nsgs
+proj-setup : proj-setup-rg proj-setup-stg proj-setup-aks proj-setup-frontdoor proj-setup-awg-nsgs
 	@echo Completed setting up project resources
 
 proj-setup-rg :
@@ -119,7 +119,7 @@ proj-setup-awg-nsgs :
 		--destination-address-prefixes VirtualNetwork \
 		--access Allow
 
-proj-prepare-aks : proj-register-provider proj-install-cli proj-get-credentials proj-export-config k8s-set-default-namespace
+proj-prepare-aks : proj-register-provider proj-install-cli proj-get-credentials proj-export-config k8s-set-default-namespace aks-set-storage-secret
 
 proj-register-provider :
 	@echo Registering OperationsManagement, OperationalInsights and Cdn
@@ -136,3 +136,11 @@ proj-get-credentials :
 
 proj-export-config :
 	- cp /root/.kube/config .aks_kube_config
+
+proj-setup-stg :
+	@echo Starting to set up project storage account [$(proj_storage)]
+	- az storage account create\
+		--name $(proj_storage)\
+		--resource-group $(proj_resource_group)\
+		--kind StorageV2
+	@echo

@@ -25,7 +25,7 @@ Templates                                         Short Name                   L
 Console Application                               console                      [C#], F#, VB      Common/Console
 Class library                                     classlib                     [C#], F#, VB      Common/Library
 ...
-Tugboat: WebAPI                                   tugboat-webapi               [C#], F#          .NET App with WebApi Front-End
+Tugboat: WebAPI                                   dotnet-webapi               [C#], F#          .NET App with WebApi Front-End
 ...
 
 Examples:

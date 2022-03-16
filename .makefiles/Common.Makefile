@@ -22,6 +22,9 @@ proj_cluster:=aks-$(project-lc)
 proj_appgateway:=agw-$(project-lc)
 proj_acr_sp:=sp-$(proj_name)
 proj_agic_nsg_name:=nsg-agic-$(project-lc)
+proj_storage=$(shell echo """stg$(org-lc)$(project-lc)""" | cut -c1-45 | tr A-Z a-z)
+proj_storage_secret=secret-$(proj_storage)
+
 
 #github configuration
 github_repo           ?=$(org-lc)-$(project-lc)
@@ -114,6 +117,9 @@ list-config:
 	@echo "proj_region                    : "[$(proj_region)]
 	@echo "proj_cluster                   : "[$(proj_cluster)]
 	@echo "proj_acr_sp                    : "[$(proj_acr_sp)]
+	@echo "proj_storage                   : "[$(proj_storage)]
+	@echo "proj_storage_connection_string : "[$(proj_storage_connection_string)]
+	@echo "proj_storage_secret            : "[$(proj_storage_secret)]
 	@echo
 
 sleep-% :

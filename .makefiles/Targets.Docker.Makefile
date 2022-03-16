@@ -12,7 +12,13 @@ docker-push :
 	@echo Pushed images to container registry
 
 docker-run :
-	docker run --rm -p 5000:80 $(container_name)
+	docker run \
+		--rm \
+		--publish 30000:30000 \
+		--publish 11111:11111 \
+		--publish 5000:80 \
+		--publish 8080:8080 \
+		$(container_name)
 	@echo Launched container
 
 docker-image-explore :
