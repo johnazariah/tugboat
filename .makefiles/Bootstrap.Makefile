@@ -10,10 +10,10 @@ hello :
 tugboat-init : git-init az-login az-sub-set gh-login gh-create-repo az-create-aad-app
 
 tugboat-setup-org-bicep:
-	az deployment sub create --location $(org_region) --parameters org=$(org) --template-file .azure/org/org_setup.bicep
+	az deployment sub create --name "dply-$(org)-tgbt" --location $(org_region) --parameters org=$(org) --template-file .azure/org/org_setup.bicep
 
 tugboat-setup-proj-bicep:
-	az deployment sub create --location $(proj_region) --parameters org=$(org) project=$(project) --template-file .azure/proj/proj_setup.bicep
+	az deployment sub create --name "dply-$(org)-$(project)" --location $(proj_region) --parameters org=$(org) project=$(project) --template-file .azure/proj/proj_setup.bicep
 
 tugboat-setup-proj-cluster : proj-setup-aks proj-setup-frontdoor proj-setup-awg-nsgs proj-create-cluster-role-assignment
 
