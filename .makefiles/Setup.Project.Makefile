@@ -29,7 +29,7 @@ proj-setup-stg : proj-setup-rg
 
 proj-setup-aks : acr_id   = $(shell az acr show --name $(org_acr) --resource-group $(org_resource_group) --query "id" --output tsv)
 proj-setup-aks : lawks_id = $(shell az monitor log-analytics workspace show --workspace-name $(org_lawks) --resource-group $(org_resource_group) --query "id" --output tsv)
-proj-setup-aks : 
+proj-setup-aks :
 	@echo Starting to set up project AKS cluster [$(proj_cluster)]
 	@echo
 	@echo Will connect cluster $(proj_cluster) to ACR $(acr_id), \
@@ -38,7 +38,7 @@ proj-setup-aks :
 	- az aks create\
 		--name $(proj_cluster)\
 		--resource-group $(proj_resource_group)\
-		--location $(proj_region)\		
+		--location $(proj_region)\
 		--enable-aad\
 		--enable-azure-rbac\
 		--node-vm-size standard_d2s_v5\
@@ -57,7 +57,7 @@ proj-setup-aks :
 proj-setup-frontdoor : agw_resource_id = $(shell az aks show --name $(proj_cluster) --resource-group $(proj_resource_group) --query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId" --output tsv )
 proj-setup-frontdoor : pip_resource_id = $(shell az network application-gateway show --ids $(agw_resource_id) --query "frontendIpConfigurations[?publicIpAddress.id != '' && type == 'Microsoft.Network/applicationGateways/frontendIPConfigurations'] | [0].publicIpAddress.id" --output tsv)
 proj-setup-frontdoor : pip_ip          = $(shell az network public-ip show --ids $(pip_resource_id) --query "ipAddress" --output tsv)
-proj-setup-frontdoor : proj-setup-aks 
+proj-setup-frontdoor : proj-setup-aks
 	@echo Starting to set up project Azure Front Door profile
 	@echo
 	@echo Retrieved AGW Id $(agw_resource_id), \
@@ -154,7 +154,7 @@ proj-register-provider :
 	- az provider register --namespace Microsoft.Cdn
 	@echo
 
-proj-install-cli : 
+proj-install-cli :
 	- az aks install-cli
 
 proj-get-credentials : proj-install-cli
