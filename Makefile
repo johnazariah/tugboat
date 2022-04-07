@@ -1,4 +1,4 @@
-LibraryVersion:=0.0.22
+LibraryVersion:=0.0.23
 NugetApiKey:=
 
 source:=
@@ -181,7 +181,7 @@ copy-templates.% :
 	@echo Copying Templates For $* [$(lang)]
 	cp -rv $(templates_root)/$*/. $(copy_target_root)/$*-$(lang)
 	cp -rv .makefiles $(copy_target_root)/$*-$(lang)
-	cp -rv .config $(copy_target_root)/$*-$(lang)
+	cp -rv .azure $(copy_target_root)/$*-$(lang)
 	@echo
 	@echo Fixing up Language Specific Suffixes
 	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Makefile                 template=$* replace-pattern

@@ -1,56 +1,27 @@
 hello :
 	@echo Welcome to the GeneratedProjectName Project
 	@echo
-	@echo Please provide your configuration secrets in the '.config' directory. These files _will not_ get checked-in to source control.
 	@echo Please modify any defaults in the 'Defaults.Makefile' file. These changes _will_ get picked up by the CI/CD pipeline.
 	@echo
-	@echo First login and set the default subscription by running:
-	@echo 	make bootstrap-init
+	@echo First set-up your local environment and the github repo by running :
+	@echo 	make tugboat-init
 	@echo
 
-bootstrap-all :  init az-login az-sub-set gh-login bootstrap-org bootstrap-project gh-create-repo gh-wireup-azure
+tugboat-init : git-init az-login az-sub-set gh-login gh-create-repo az-create-aad-app
 
-foo:
-	@echo Don''t forget to kick the github build action off for the very first time!
-	@echo
-	@echo https://github.com/$(github_user)/$(github_repo)/actions
-	@echo
-	@echo After the build succeeds, you can see the deployed application and the cluster status by running:
-	@echo    make status
-	@echo
+tugboat-setup-org-bicep:
+	az deployment sub create --location $(org_region) --parameters org=$(org) --template-file .azure/org/org_setup.bicep
 
-bootstrap-init : sub ?=Please specify Azure subscription id to use
-bootstrap-init : init az-login az-sub-set
-	@echo Logged in
-	@echo
-	@echo If this is your very first time building a Tugboat project, run
-	@echo 	make bootstrap-org
-	@echo
-	@echo If you have previously set up an organization and want to add this project to it, run
-	@echo 	make bootstrap-project
-	@echo
+tugboat-setup-proj-bicep:
+	az deployment sub create --location $(proj_region) --parameters org=$(org) project=$(project) --template-file .azure/proj/proj_setup.bicep
 
-bootstrap-org : list-config org-setup org-login-acr
-	@echo Organization bootstrapped
-	@echo
-	@echo Run the following command to bootstrap your project
-	@echo 	make bootstrap-project
+tugboat-setup-proj-cluster : proj-setup-aks proj-setup-frontdoor proj-setup-awg-nsgs proj-create-cluster-role-assignment
 
-bootstrap-project : list-config aks-acr-login proj-setup proj-prepare-aks
-	@echo Project $(project) bootstrapped and deployed!
-	@echo
-	@echo Run the following command to bootstrap your project
-	@echo 	make bootstrap-github
+tugboat-delete-all-resources:
+	- az group list --tag tugboat-org --query [].name --out tsv | xargs -otl az group delete --no-wait --yes -n
+	- $(MAKE) org-purge-kv
 
-bootstrap-github : list-config gh-setup
-	@echo Github repository setup!
-	@echo
-	@echo Make changes to your code, commit and push to your main branch on Github and
-	@echo 	they will automatically be built and deployed!
-	@echo
-	$(MAKE) url
-
-bootstrap-env : az-login az-sub-set gh-login aks-acr-login proj-prepare-aks status
+bootstrap-env : az-login az-sub-set gh-login proj-prepare-aks status
 	@echo Environment bootstrapped
 	@echo
 	@echo Make changes to your code, commit and push to your main branch on Github and

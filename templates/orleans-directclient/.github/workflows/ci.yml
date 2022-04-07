@@ -1,13 +1,19 @@
 name: CI/CD
 
 on:
-  pull_request:
-    branches: [ main ]
-  push:
-    branches: [ main ]
-
+  # pull_request:
+  #   branches: [ main ]
+  # push:
+  #   branches: [ main ]
+  #   tags:
+  #     - 'deploy-dev*'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  
 jobs:
   build-and-test-solution:
     name: build-and-test
@@ -19,14 +25,13 @@ jobs:
     - name: Build & Test .NET Application
       run: make dotnet-build dotnet-test
     - name: Login to Azure
-      run: |
-        az login \
-        --service-principal \
-        --username ${{ secrets.service_principal_id }} \
-        --password ${{ secrets.service_principal_password }} \
-        --tenant   ${{ secrets.service_principal_tenant }}
+      uses: azure/login@v1
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     - name: ACR build
-      run: make acr-build
+      run: make proj-acr-build
     - name: Get AKS Credentials
       run: make aks-get-credentials
     - name: Deploy to AKS

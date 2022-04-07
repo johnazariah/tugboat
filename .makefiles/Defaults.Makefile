@@ -11,3 +11,5 @@ git_email           ?=primary@$(org).org
 
 tenant              ?=microsoft.onmicrosoft.com
 sub                 ?="some illegal guid which will fail"
+
+github_user         ?=<some illegal github user>

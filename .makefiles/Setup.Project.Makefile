@@ -3,19 +3,33 @@ proj-cleanup:
 	- az group delete --name $(proj_resource_group) --yes
 	@echo Completed cleaning up project resources
 
-proj-setup : proj-setup-rg proj-setup-stg proj-setup-aks proj-setup-frontdoor proj-setup-awg-nsgs
+proj-setup :	org-setup \
+				proj-setup-rg \
+				proj-setup-stg \
+				proj-setup-aks \
+				proj-setup-frontdoor \
+				proj-setup-awg-nsgs
 	@echo Completed setting up project resources
 
 proj-setup-rg :
 	@echo Starting to set up project resource group [$(proj_resource_group)]
 	- az group create\
 		--name $(proj_resource_group)\
-		--location $(proj_region)
+		--location $(proj_region)\
+		--tags tugboat-org=$(org_name) tugboat-proj=$(proj_name)
+	@echo
+
+proj-setup-stg : proj-setup-rg
+	@echo Starting to set up project storage account [$(proj_storage)]
+	- az storage account create\
+		--name $(proj_storage)\
+		--resource-group $(proj_resource_group)\
+		--kind StorageV2
 	@echo
 
 proj-setup-aks : acr_id   = $(shell az acr show --name $(org_acr) --resource-group $(org_resource_group) --query "id" --output tsv)
 proj-setup-aks : lawks_id = $(shell az monitor log-analytics workspace show --workspace-name $(org_lawks) --resource-group $(org_resource_group) --query "id" --output tsv)
-proj-setup-aks :
+proj-setup-aks : 
 	@echo Starting to set up project AKS cluster [$(proj_cluster)]
 	@echo
 	@echo Will connect cluster $(proj_cluster) to ACR $(acr_id), \
@@ -24,7 +38,9 @@ proj-setup-aks :
 	- az aks create\
 		--name $(proj_cluster)\
 		--resource-group $(proj_resource_group)\
-		--location $(proj_region)\
+		--location $(proj_region)\		
+		--enable-aad\
+		--enable-azure-rbac\
 		--node-vm-size standard_d2s_v5\
 		--node-count 3\
 		--min-count 2 --max-count 5 --enable-cluster-autoscaler\
@@ -41,7 +57,7 @@ proj-setup-aks :
 proj-setup-frontdoor : agw_resource_id = $(shell az aks show --name $(proj_cluster) --resource-group $(proj_resource_group) --query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId" --output tsv )
 proj-setup-frontdoor : pip_resource_id = $(shell az network application-gateway show --ids $(agw_resource_id) --query "frontendIpConfigurations[?publicIpAddress.id != '' && type == 'Microsoft.Network/applicationGateways/frontendIPConfigurations'] | [0].publicIpAddress.id" --output tsv)
 proj-setup-frontdoor : pip_ip          = $(shell az network public-ip show --ids $(pip_resource_id) --query "ipAddress" --output tsv)
-proj-setup-frontdoor :
+proj-setup-frontdoor : proj-setup-aks 
 	@echo Starting to set up project Azure Front Door profile
 	@echo
 	@echo Retrieved AGW Id $(agw_resource_id), \
@@ -87,7 +103,7 @@ proj-setup-frontdoor :
 	@echo
 
 proj-setup-awg-nsgs : mc_rg = $(shell az aks show -g $(proj_resource_group) -n $(proj_cluster) --query nodeResourceGroup --output tsv)
-proj-setup-awg-nsgs :
+proj-setup-awg-nsgs : proj-setup-aks
 	- az network nsg create \
 		--resource-group $(mc_rg) \
 		--name $(proj_agic_nsg_name) \
@@ -119,7 +135,17 @@ proj-setup-awg-nsgs :
 		--destination-address-prefixes VirtualNetwork \
 		--access Allow
 
-proj-prepare-aks : proj-register-provider proj-install-cli proj-get-credentials proj-export-config k8s-set-default-namespace aks-set-storage-secret
+proj-prepare-aks : 	proj-acr-login \
+					proj-register-provider \
+					proj-install-cli \
+					proj-get-credentials \
+					proj-export-config \
+					k8s-set-default-namespace \
+					aks-set-storage-secret
+
+proj-acr-login : acr_login_token =$(shell az acr login --name $(org_acr) --expose-token --query accessToken -o tsv)
+proj-acr-login :
+	- docker login $(org_acr_login_server) -u 00000000-0000-0000-0000-000000000000 -p "$(acr_login_token)"
 
 proj-register-provider :
 	@echo Registering OperationsManagement, OperationalInsights and Cdn
@@ -128,19 +154,29 @@ proj-register-provider :
 	- az provider register --namespace Microsoft.Cdn
 	@echo
 
-proj-install-cli :
+proj-install-cli : 
 	- az aks install-cli
 
-proj-get-credentials :
+proj-get-credentials : proj-install-cli
 	- az aks get-credentials --resource-group $(proj_resource_group) --name $(proj_cluster)
 
-proj-export-config :
+proj-export-config : proj-get-credentials
 	- cp /root/.kube/config .aks_kube_config
 
-proj-setup-stg :
-	@echo Starting to set up project storage account [$(proj_storage)]
-	- az storage account create\
-		--name $(proj_storage)\
-		--resource-group $(proj_resource_group)\
-		--kind StorageV2
-	@echo
+proj-acr-build :
+	az acr build \
+	--registry $(org_acr) \
+	--image $(container_name) \
+	--image $(container_latest) \
+	--file Dockerfile \
+	.
+
+proj-create-cluster-role-assignment : app_id=$(shell az ad app list --display-name $(proj_aad_app_name) --query [].appId --out tsv)
+proj-create-cluster-role-assignment : spn_oid=$(shell az ad sp show --id $(app_id) --query objectId --out tsv)
+proj-create-cluster-role-assignment : aks_id=$(shell az aks show --resource-group $(proj_region) --name $(proj_cluster) --query id --out tsv)
+proj-create-cluster-role-assignment :
+	- az role assignment create\
+		--role "Azure Kubernetes Service RBAC Cluster Admin"\
+		--scope $(aks_id)\
+		--assignee-object-id $(spn_oid)\
+		--assignee-principal-type ServicePrincipal

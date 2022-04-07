@@ -1,9 +1,5 @@
 SHELL := '/bin/bash'
 
--include .config/git.cfg
--include .config/subscription.cfg
--include .config/github.cfg
-
 -include .makefiles/Defaults.Makefile
 -include .makefiles/Common.Makefile
 -include .makefiles/Setup.Github.Makefile

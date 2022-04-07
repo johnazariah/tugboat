@@ -1,0 +1,61 @@
+name: Azure Infrastructure Setup
+on:
+  # push:
+  #   tags:
+  #     - 'setup-azure*'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-org:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Makefiles
+      uses: actions/checkout@v2
+    
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        
+    - name: Create Org Resources
+      run: make tugboat-setup-org-bicep
+  
+  build-proj:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Makefiles
+      uses: actions/checkout@v2
+    
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    
+    - name: Create Project Resources
+      run: make tugboat-setup-proj-bicep
+
+  build-cluster:
+    runs-on: ubuntu-latest
+    needs: [build-org, build-proj]
+    steps:
+    - name: Checkout Makefiles
+      uses: actions/checkout@v2
+    
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    
+    - name: Create Project Cluster
+      run: make tugboat-setup-proj-cluster

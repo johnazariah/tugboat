@@ -14,7 +14,7 @@ spec:
       labels:
         app: {project-name}-{image-tag}-pod
         orleans/serviceId: {project-name}-{image-tag}
-        orleans/clusterId: {project-name}-{image-tag}-green
+        orleans/clusterId: {project-name}-{image-tag}-$(project-lc)
     spec:
       terminationGracePeriodSeconds: 180
       containers:
