@@ -1,0 +1,70 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {project-name}-{image-tag}-deployment
+  labels:
+    serviceId: {project-name}-{image-tag}-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: {project-name}-{image-tag}-pod
+  template:
+    metadata:
+      labels:
+        app: {project-name}-{image-tag}-pod
+    spec:
+      terminationGracePeriodSeconds: 180
+      containers:
+      - name: {project-name}-{image-tag}-container
+        image: {image-name}
+        resources:
+          limits:
+            memory: "768Mi"
+            cpu: "500m"
+          requests:
+            memory: "32Mi"
+            cpu: "100m"
+        env:
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: DOTNET_SHUTDOWNTIMEOUTSECONDS
+            value: "120"
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: dashboard
+          containerPort: 8080
+          protocol: TCP
+  minReadySeconds: 60
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {project-name}-{image-tag}-service
+spec:
+  selector:
+    app: {project-name}-{image-tag}-pod
+  type: LoadBalancer
+  ports:
+  - name: dashboard
+    port: 8080
+    targetPort: 8080
+  - name: http
+    port: 80
+    targetPort: 80

@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library.Tugboat", "Library.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "csharp", "csharp", "{033101E8-22BF-41B3-BE56-061E6B814A5D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnet-webapi", "proto-csharp\dotnet-webapi\dotnet-webapi\dotnet-webapi.csproj", "{A12FDDB4-E61C-455F-9164-07078AD574E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnet-webapi", "proto-csharp\dotnet-webapi\appl\appl.csproj", "{A12FDDB4-E61C-455F-9164-07078AD574E7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "appl-controllers", "proto-csharp\dotnet-webapi\appl-controllers\appl-controllers.csproj", "{FCEFD171-404C-4029-A65F-006DDB80258F}"
 EndProject
@@ -23,7 +23,7 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "appl-controllers", "proto-f
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "appl-tests", "proto-fsharp\dotnet-webapi\appl-tests\appl-tests.fsproj", "{5D7AB63C-8106-425B-B059-9F5B5E829587}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "dotnet-webapi", "proto-fsharp\dotnet-webapi\dotnet-webapi\dotnet-webapi.fsproj", "{610DB54F-8D62-4EDC-AA74-6144BF5959A6}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "dotnet-webapi", "proto-fsharp\dotnet-webapi\appl\appl.fsproj", "{610DB54F-8D62-4EDC-AA74-6144BF5959A6}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "appl-logic", "proto-fsharp\dotnet-webapi\appl-logic\appl-logic.fsproj", "{8A81749D-FA08-4BA2-81DB-6709BB3F62CF}"
 EndProject
@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "grain-tests", "proto-csharp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "grain-controllers", "proto-csharp\orleans-directclient\grain-controllers\grain-controllers.csproj", "{1085437A-9D8D-47FE-B6AA-097EE9F57DBD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "orleans-directclient", "proto-csharp\orleans-directclient\orleans-directclient\orleans-directclient.csproj", "{54663D0F-6ECD-4EB8-B1F2-2538A8B51E36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "orleans-directclient", "proto-csharp\orleans-directclient\appl\appl.csproj", "{54663D0F-6ECD-4EB8-B1F2-2538A8B51E36}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "fsharp", "fsharp", "{2F24CE72-9D20-4BCA-AA7D-6C99E8C5AA33}"
 EndProject
@@ -47,7 +47,7 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "grain-tests", "proto-fsharp
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "grain-controllers", "proto-fsharp\orleans-directclient\grain-controllers\grain-controllers.fsproj", "{58A163B1-9ABA-4854-B162-BADD91A09B70}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "orleans-directclient", "proto-fsharp\orleans-directclient\orleans-directclient\orleans-directclient.fsproj", "{68ECBF40-7257-400F-B199-0DB6D2A7A005}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "orleans-directclient", "proto-fsharp\orleans-directclient\appl\appl.fsproj", "{68ECBF40-7257-400F-B199-0DB6D2A7A005}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

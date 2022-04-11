@@ -1,0 +1,60 @@
+name: Build and Deploy to AKS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  
+jobs:
+  build-and-test-solution:
+    name: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v2
+    
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+    
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    
+    - name: ACR build
+      run: make proj-acr-build
+
+    - name: Get AKS Credentials
+      run: make aks-get-credentials
+
+    - name: Get kubelogin
+      run: brew install Azure/kubelogin/kubelogin
+        
+    - name: Convert kubeconfig
+      run: kubelogin convert-kubeconfig -l workloadidentity
+        
+    - name: Retrieve id-token and store
+      run: |
+        IDTOKEN=$(curl -sSL -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" -H "Accept: application/json; api-version=2.0" -H "Content-Type: application/json" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api://AzureADTokenExchange" | jq -r '.value')
+        echo $IDTOKEN > ${RUNNER_TEMP}/.token
+        jwtd() {
+            if [[ -x $(command -v jq) ]]; then
+                jq -R 'split(".") | .[0],.[1] | @base64d | fromjson' <<< "${1}"
+                echo "Signature: $(echo "${1}" | awk -F'.' '{print $3}')"
+            fi
+        }
+        jwtd $IDTOKEN
+        echo "::set-output name=idToken::${IDTOKEN}"
+      
+    - name: Deploy to AKS
+      env:
+        AZURE_AUTHORITY_HOST: https://login.microsoftonline.com/
+        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      run: |
+        export AZURE_FEDERATED_TOKEN_FILE=${RUNNER_TEMP}/.token
+        make k8s-deploy

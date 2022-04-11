@@ -1,4 +1,4 @@
-LibraryVersion:=0.0.25
+LibraryVersion:=0.0.26
 NugetApiKey:=
 
 source:=
@@ -130,88 +130,55 @@ copy-template-pack : $(foreach l,$(languages),$(foreach t,$(template-types),copy
 copy-template.% : lang=$(subst .,,$(suffix $*))
 copy-template.% : template=$(basename $*)
 copy-template.% :
-	$(MAKE) lang=$(lang) copy-single-template.$(template)
+	$(MAKE) lang=$(lang) template=$(template) copy-code-folder.$(template)
+	$(MAKE) lang=$(lang) template=$(template) copy-templates.$(template)
+	$(MAKE) lang=$(lang) template=$(template) copy-ignores.$(template)
 	@echo Built Template Folder For $* [$(lang)]
 	@echo
 
-copy-single-template.dotnet-webapi        : copy-single-template.% : copy-project.% copy-templates.% copy-ignores.% copy-scripts.% copy-appl-logic.% copy-appl-tests.% copy-appl-controllers.%
+copy-code-folder.dotnet-webapi :
+	$(MAKE) lang=$(lang) template=$(template) copy-template-subfolder.appl
+	$(MAKE) lang=$(lang) template=$(template) copy-template-subfolder.appl-controllers
+	$(MAKE) lang=$(lang) template=$(template) copy-template-subfolder.appl-logic
+	$(MAKE) lang=$(lang) template=$(template) copy-template-subfolder.appl-tests
 	@echo
 
-copy-single-template.orleans-directclient : copy-single-template.% : copy-project.% copy-templates.% copy-ignores.% copy-scripts.% copy-grains.% copy-grain-tests.% copy-grain-controllers.%
+copy-code-folder.orleans-directclient :
+	$(MAKE) lang=$(lang) template=$(template) copy-template-subfolder.appl
+	$(MAKE) lang=$(lang) template=$(template) copy-template-subfolder.grain-controllers
+	$(MAKE) lang=$(lang) template=$(template) copy-template-subfolder.grains
+	$(MAKE) lang=$(lang) template=$(template) copy-template-subfolder.grain-tests
 	@echo
 
-copy-appl-controllers.% :
-	@echo Copying Application Controllers Project For $* [$(lang)]
-	$(MAKE) source=$(proto_root)-$(lang)/$*/appl-controllers target=$(copy_target_root)/$*-$(lang)/appl-controllers copy
-	$(MAKE) src_project_file=$*/appl-controllers/appl-controllers.$(projsuffix) dest_project_file=$*-$(lang)/appl-controllers/appl-controllers.$(projsuffix) replace-project-reference-with-nuget-reference
-	@echo
-
-copy-appl-logic.% :
-	@echo Copying Application Logic Project For $* [$(lang)]
-	$(MAKE) source=$(proto_root)-$(lang)/$*/appl-logic target=$(copy_target_root)/$*-$(lang)/appl-logic copy
-	$(MAKE) src_project_file=$*/appl-logic/appl-logic.$(projsuffix) dest_project_file=$*-$(lang)/appl-logic/appl-logic.$(projsuffix) replace-project-reference-with-nuget-reference
-	@echo
-
-copy-appl-tests.% :
-	@echo Copying Application Tests Project For $* [$(lang)]
-	$(MAKE) source=$(proto_root)-$(lang)/$*/appl-tests target=$(copy_target_root)/$*-$(lang)/appl-tests copy
-	$(MAKE) src_project_file=$*/appl-tests/appl-tests.$(projsuffix) dest_project_file=$*-$(lang)/appl-tests/appl-tests.$(projsuffix) replace-project-reference-with-nuget-reference
-	@echo
-
-copy-grain-controllers.% :
-	@echo Copying Grain Controllers Project For $* [$(lang)]
-	$(MAKE) source=$(proto_root)-$(lang)/$*/grain-controllers target=$(copy_target_root)/$*-$(lang)/grain-controllers copy
-	$(MAKE) src_project_file=$*/grain-controllers/grain-controllers.$(projsuffix) dest_project_file=$*-$(lang)/grain-controllers/grain-controllers.$(projsuffix) replace-project-reference-with-nuget-reference
-	@echo
-
-copy-grains.% :
-	@echo Copying Grains Project For $* [$(lang)]
-	$(MAKE) source=$(proto_root)-$(lang)/$*/grains target=$(copy_target_root)/$*-$(lang)/grains copy
-	$(MAKE) src_project_file=$*/grains/grains.$(projsuffix) dest_project_file=$*-$(lang)/grains/grains.$(projsuffix) replace-project-reference-with-nuget-reference
-	@echo
-
-copy-grain-tests.% :
-	@echo Copying Grain Tests Project For $* [$(lang)]
-	$(MAKE) source=$(proto_root)-$(lang)/$*/grain-tests target=$(copy_target_root)/$*-$(lang)/grain-tests copy
-	$(MAKE) src_project_file=$*/grain-tests/grain-tests.$(projsuffix) dest_project_file=$*-$(lang)/grain-tests/grain-tests.$(projsuffix) replace-project-reference-with-nuget-reference
+copy-template-subfolder.% :
+	@echo [$(lang)] Copying SubFolder [$*] for [$(template)]
+	$(MAKE) source=$(proto_root)-$(lang)/$(template)/$* target=$(copy_target_root)/$(template)-$(lang)/src/$* copy
+	$(MAKE) src_project_file=$(template)/$*/$*.$(projsuffix) dest_project_file=$(template)-$(lang)/src/$*/$*.$(projsuffix) replace-project-reference-with-nuget-reference
 	@echo
 
 copy-templates.% : makefiles=$(foreach f,$(wildcard .makefiles/*.Makefile),$(notdir $(f)))
 copy-templates.% :
 	@echo Copying Templates For $* [$(lang)]
 	cp -rv $(templates_root)/$*/. $(copy_target_root)/$*-$(lang)
-	cp -rv .makefiles $(copy_target_root)/$*-$(lang)
-	cp -rv .azure $(copy_target_root)/$*-$(lang)
 	@echo
 	@echo Fixing up Language Specific Suffixes
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Makefile                 template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=GeneratedProjectName.sln template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Dockerfile               template=$* replace-pattern
-	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=tye.yaml                 template=$* replace-pattern
+	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Makefile    template=$* replace-pattern
+	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Dockerfile  template=$* replace-pattern
+	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=appl.sln    template=$* replace-pattern
+	mv $(copy_target_root)/$*-$(lang)/appl.sln $(copy_target_root)/$*-$(lang)/src/appl.sln
 
 	$(MAKE) replace_pattern=_LANGNAME_ replacement_pattern=$(language_name) replace_in_file=.template.config/template.json template=$* replace-pattern
 	$(MAKE) replace_pattern=_LANG_     replacement_pattern=$(language)      replace_in_file=.template.config/template.json template=$* replace-pattern
+
 	for f in $(makefiles); do\
 		$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=.makefiles/$$f template=$* replace-pattern;\
 	done
-	@echo
-
-copy-project.% :
-	@echo Copying Project For $* [$(lang)]
-	$(MAKE) source=$(proto_root)-$(lang)/$*/$* target=$(copy_target_root)/$*-$(lang)/GeneratedProjectName copy
-	$(MAKE) src_project_file=$*/$*/$*.$(projsuffix) dest_project_file=$*-$(lang)/GeneratedProjectName/GeneratedProjectName.$(projsuffix) replace-project-reference-with-nuget-reference	
-	- rm $(copy_target_root)/$*-$(lang)/GeneratedProjectName/$*.$(projsuffix)
 	@echo
 
 copy-ignores.% :
 	@echo Copying .gitignore and .dockerignore For $* [$(lang)]
 	- cp .gitignore    $(copy_target_root)/$*-$(lang)/.gitignore
 	- cp .dockerignore $(copy_target_root)/$*-$(lang)/.dockerignore
-	@echo
-
-copy-scripts.% :
-	@echo Copying scripts For $* [$(lang)]
-	- cp dev.sh  $(copy_target_root)/$*-$(lang)/dev.sh
 	@echo
 
 replace-project-reference-with-nuget-reference :

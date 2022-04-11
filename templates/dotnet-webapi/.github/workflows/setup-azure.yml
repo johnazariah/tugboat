@@ -1,9 +1,5 @@
 name: Azure Infrastructure Setup
 on:
-  # push:
-  #   tags:
-  #     - 'setup-azure*'
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 permissions:
@@ -59,3 +55,8 @@ jobs:
     
     - name: Create Project Cluster
       run: make tugboat-setup-proj-cluster
+
+    - name: Setup Role Assignments
+      run: |
+        make spn_oid=${{ secrets.PROJECT_SPN_OID }} tugboat-setup-role-assignments
+    
