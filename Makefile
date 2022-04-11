@@ -1,4 +1,4 @@
-LibraryVersion:=0.0.26
+LibraryVersion:=0.0.27
 NugetApiKey:=
 
 source:=
@@ -165,6 +165,7 @@ copy-templates.% :
 	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Makefile    template=$* replace-pattern
 	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=Dockerfile  template=$* replace-pattern
 	$(MAKE) replace_pattern=_PROJ_SUFFIX_ replacement_pattern=$(projsuffix) replace_in_file=appl.sln    template=$* replace-pattern
+	$(MAKE) replace_pattern=_TEMPLATE_    replacement_pattern=$*            replace_in_file=README.md   template=$* replace-pattern
 	mv $(copy_target_root)/$*-$(lang)/appl.sln $(copy_target_root)/$*-$(lang)/src/appl.sln
 
 	$(MAKE) replace_pattern=_LANGNAME_ replacement_pattern=$(language_name) replace_in_file=.template.config/template.json template=$* replace-pattern

@@ -19,29 +19,6 @@ Here's how you can quickly get started with .NET:
 dotnet new --install WestIsland.Tugboat.Templates
 ```
 
-This should print out the list of installed templates, including the following:
-
-```shell
-$ dotnet new --install WestIsland.Tugboat.Templates
-  Restore completed in 660.35 ms.
-
-...
-
-Templates                                         Short Name                   Language          Tags
-----------------------------------------------------------------------------------------------------------------------------------------------------
-Console Application                               console                      [C#], F#, VB      Common/Console
-Class library                                     classlib                     [C#], F#, VB      Common/Library
-...
-Tugboat: WebAPI                                   dotnet-webapi               [C#], F#          Tugboat/WebApi Direct Client
-...
-
-Examples:
-    dotnet new mvc --auth Individual
-    dotnet new react
-    dotnet new --help
-
-```
-
 ## 2. Create an application with a name like `HelloTugboat`
 
 ```shell
@@ -63,53 +40,48 @@ The template "Tugboat: WebAPI" was created successfully.
 ```shell
 $ cd HelloTugboat
 $ ls -al
-total 31
-drwxr-xr-x 1 johnaz 4096    0 Apr 30 09:50 ./
-drwxr-xr-x 1 johnaz 4096    0 Apr 30 09:50 ../
--rw-r--r-- 1 johnaz 4096  124 Apr 30 09:50 .dockerignore
-drwxr-xr-x 1 johnaz 4096    0 Apr 30 09:50 .github/
--rw-r--r-- 1 johnaz 4096 3266 Apr 30 09:50 .gitignore
--rw-r--r-- 1 johnaz 4096  206 Apr 30 09:50 docker-compose.yml
--rw-r--r-- 1 johnaz 4096 2119 Apr 30 09:50 Dockerfile
-drwxr-xr-x 1 johnaz 4096    0 Apr 30 09:51 appl-controllers/
-drwxr-xr-x 1 johnaz 4096    0 Apr 30 09:50 appl-tests/
-drwxr-xr-x 1 johnaz 4096    0 Apr 30 09:50 HelloTugboat/
--rw-r--r-- 1 johnaz 4096 2578 Apr 30 09:50 HelloTugboat.sln
--rw-r--r-- 1 johnaz 4096 2720 Apr 30 09:50 Makefile
+total 47
+drwxr-xr-x 1 johnaz 4096    0 Apr 11 06:09 ./
+drwxr-xr-x 1 johnaz 4096    0 Apr 11 05:43 ../
+drwxr-xr-x 1 johnaz 4096    0 Apr 11 05:43 .azure/
+-rw-r--r-- 1 johnaz 4096  106 Apr 11 05:43 .dockerignore
+drwxr-xr-x 1 johnaz 4096    0 Apr 11 05:43 .github/
+-rw-r--r-- 1 johnaz 4096 3312 Apr 11 05:43 .gitignore
+drwxr-xr-x 1 johnaz 4096    0 Apr 11 05:43 .makefiles/
+drwxr-xr-x 1 johnaz 4096    0 Apr 11 05:43 .scripts/
+-rw-r--r-- 1 johnaz 4096  476 Apr 11 05:43 dev.sh
+-rw-r--r-- 1 johnaz 4096  921 Apr 11 05:43 Dockerfile
+-rw-r--r-- 1 johnaz 4096  477 Apr 11 05:43 Makefile
+drwxr-xr-x 1 johnaz 4096    0 Apr 11 05:43 src/
+drwxr-xr-x 1 johnaz 4096    0 Apr 11 05:43 wwwroot/
 ```
 
 You will notice that it contains:
 
-* A _console application_ project named `HelloTugboat` which is the **host application**
-* A _class library_ project named **appl-controllers** where controllers are provided to expose methods over WebAPI
-* A _xunit test_ project where grains can be tested in a test cluster, with examples of how to do **unit-** and **property-based-** testing
-* A _solution file_ to coordinate the projects together
+* A `src` folder with:
+  * A _console application_ project named **appl** which is the **host application**
+  * A _class library_ project named **appl-controllers** where controllers are provided to expose methods over WebAPI
+  * A _class library_ project named **appl-logic** where the business logic can be placed
+  * A _xunit test_ project where grains can be tested in a test cluster, with examples of how to do **unit-** and **property-based-** testing
+  * A _solution file_ to coordinate the projects together
 * A `Makefile` script to help you with the incantations to use whilst developing. You do not need to know `make` to use it
 * A `Dockerfile` script to package your application into a [Docker](https://www.docker.com/) container. You do not need to have Docker installed if you do not want to use it
 * `.gitignore` and `.dockerignore` files to help keep your working set clean
-* A `.github` folder which contains a simple CI pipeline ready to build your library if you commit it to a [GitHub](https://github.com/) repository
+* A `.github` folder which contains pipelines ready to build your library when you commit it to a [GitHub](https://github.com/) repository
+* An `.azure` folder which contains scripts used by the github pipelines to set up all the requisite Azure resources in your own Azure subscription
+* A `dev.sh` shell script which fires up a completely self-contained development environment with all the tools and libraries pre-installed.
 
-In future, there will be scripts to help you set up Azure CI pipelines & AKS clusters, deploy to Kubernetes, and so forth.
+## 4. Fire up the Dev Environment
 
-## 4. Build, Test and Run the generated application
-
-```shell
-$ dotnet build HelloTugboat.sln
-...
-
-```
+In the project folder of the newly created project, run
 
 ```shell
-$ dotnet test HelloTugboat.sln
-...
-
+./dev.sh
 ```
 
-Now fire up a browser and point it to https://localhost:5001/swagger/index.html and you will be presented with the API for a simple calculator which knows how to add two numbers.
+This will download a docker image and fire it up, and give you an interactive prompt where you have access to all the tools you will need to interact with `make`; Azure through the `az` CLI; and Github through the `gh` CLI. The `Makefile` provided also has a lot of pre-packaged functionality.
 
-Try it out. You are exercising a web-based calculator!
-
-You now have is a fully functional .NET application exposing its functionality via a WebApi front end.
+Inside your dev environment, type `make hello`, and follow the prompts. You can also read the `README.md` in your generated folder for further instructions.
 
 ## 5. Make it your own
 

@@ -129,3 +129,9 @@ list-config:
 
 sleep-% :
 	- sleep $*
+
+replace-pattern :
+ifneq ("$(wildcard $(replace_in_file))", "")
+	sed -e "s/$(replace_pattern)/$(replacement_pattern)/g" $(replace_in_file) > $(replace_in_file).tmp
+	mv $(replace_in_file).tmp $(replace_in_file)
+endif
