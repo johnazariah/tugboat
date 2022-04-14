@@ -49,6 +49,11 @@ k8s_namespace         ?=green
 init : git-init
 	git status
 
+init-fixup-readme:
+	$(MAKE) replace_pattern=_GITHUB_USER_ replacement_pattern=$(github_user) replace_in_file=README.md replace-pattern
+	$(MAKE) replace_pattern=_ORG_         replacement_pattern=$(org-lc)      replace_in_file=README.md replace-pattern
+	$(MAKE) replace_pattern=_PROJECT_     replacement_pattern=$(project-lc)  replace_in_file=README.md replace-pattern
+
 git-init :
 	@echo registering $(git_username) [$(git_email)]
 	- git init

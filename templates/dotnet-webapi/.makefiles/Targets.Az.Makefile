@@ -16,3 +16,10 @@ az-sub-show:
 
 az-show-regions:
 	az account list-locations --query "sort_by([].{Location:name}, &Location)" -o table
+
+az-create-aad-app:
+	- proj_aad_app_name=$(proj_aad_app_name)\
+	  sub=$(sub)\
+	  github_user=$(github_user)\
+	  github_repo=$(github_repo)\
+	  .scripts/create-aad-app.sh

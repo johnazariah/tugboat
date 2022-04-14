@@ -59,50 +59,57 @@ namespace GeneratedProjectName.WebApiDirectClient
             hostBuilder
                 .ConfigureWebHostDefaults(webHostBuilder =>
                     webHostBuilder
-                        .Configure((webHostBuilderContext, applicationBuilder) =>
-                            {
-                                var hostEnv = webHostBuilderContext.HostingEnvironment;
-                                var swaggerUri = "/swagger/v1/swagger.json";
-                                var swaggerName = $"{apiInfo.Title} {apiInfo.Version}";
+                        .Configure((webHostBuilderContext, applicationBuilder) => {
+                            var hostEnv = webHostBuilderContext.HostingEnvironment;
+                            var swaggerUri = "v1/swagger.json";
+                            var swaggerName = $"{apiInfo.Title} {apiInfo.Version}";
 
-                                var builder = hostEnv.IsDevelopment() ? applicationBuilder.UseDeveloperExceptionPage() : applicationBuilder;
-                                if (useHttpsRedirection) builder.UseHttpsRedirection();
+                            var builder = hostEnv.IsDevelopment() ? applicationBuilder.UseDeveloperExceptionPage() : applicationBuilder;
+                            if (useHttpsRedirection) builder.UseHttpsRedirection();
 
-                                builder
-                                    .UseDefaultFiles()
-                                    .UseStaticFiles()
-                                    .UseSwagger()
-                                    .UseSwaggerUI(options => options.SwaggerEndpoint(swaggerUri, swaggerName))
-                                    .UseResponseCompression()
-                                    .UseRouting()
-                                    .UseAuthorization()
-                                    .UseEndpoints(endpoints =>
+                            builder
+                                .UseDefaultFiles()
+                                .UseStaticFiles()
+                                .UseSwagger(options => {
+                                    options.PreSerializeFilters.Add((swagger, httpReq) => {
+                                        if (httpReq.Headers.ContainsKey("X-Original-URL"))
                                         {
-                                            endpoints.MapControllers();
-                                            endpoints.MapHealthChecks(
-                                                "/health",
-                                                new HealthCheckOptions()
-                                                {
-                                                    AllowCachingResponses = false,
-                                                    ResultStatusCodes = healthResultStatusCodes
-                                                });
+                                            var originalUrlParts = httpReq.Headers["X-Original-URL"].ToString().Trim('/').Split("/");
+                                            var applicationName = originalUrlParts[0];
+                                            var deploymentName = originalUrlParts[1];
+                                            var serverUrl = $"https://{httpReq.Headers["X-Forwarded-Host"]}/{applicationName}/{deploymentName}";
+                                            swagger.Servers = new List<OpenApiServer> { new OpenApiServer { Url = serverUrl } };
+                                        }
+                                    });
+                                })
+                                .UseSwaggerUI(options => options.SwaggerEndpoint(swaggerUri, swaggerName))
+                                .UseResponseCompression()
+                                .UseRouting()
+                                .UseAuthorization()
+                                .UseEndpoints(endpoints => {
+                                    endpoints.MapControllers();
+                                    endpoints.MapHealthChecks(
+                                        "/health",
+                                        new HealthCheckOptions()
+                                        {
+                                            AllowCachingResponses = false,
+                                            ResultStatusCodes = healthResultStatusCodes
                                         });
-                            })
+                                });
+                        })
                         .UseSetting(WebHostDefaults.ApplicationKey, Assembly.GetEntryAssembly().GetName().Name))
-                .ConfigureServices((hostBuilderContext, services) =>
-                {
+                .ConfigureServices((hostBuilderContext, services) => {
                     services
                         .AddControllers()
                         .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
                     var xmlFile = $"{Assembly.GetEntryAssembly().GetName().Name}.xml";
                     var xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, xmlFile);
-                    services.AddSwaggerGen(options =>
-                        {
-                            options.SwaggerDoc(apiInfo.Version, apiInfo);
-                            options.EnableAnnotations();
-                            options.IncludeXmlComments(xmlPath);
-                        });
+                    services.AddSwaggerGen(options => {
+                        options.SwaggerDoc(apiInfo.Version, apiInfo);
+                        options.EnableAnnotations();
+                        options.IncludeXmlComments(xmlPath);
+                    });
 
                     services
                         .AddHealthChecks()

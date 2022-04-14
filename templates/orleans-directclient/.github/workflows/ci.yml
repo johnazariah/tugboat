@@ -1,4 +1,4 @@
-name: Basic CI
+name: CI
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   dotnet-build-and-test-solution:
-    name: build-and-test
+    name: Build and Test DotNet Solution
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repo
@@ -22,7 +22,7 @@ jobs:
       run: make dotnet-test
 
   docker-build-and-test-solution:
-    name: build-and-test
+    name: Build and Package Docker Image
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repo

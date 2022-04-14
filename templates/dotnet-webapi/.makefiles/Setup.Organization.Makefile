@@ -60,10 +60,14 @@ org-setup-kv : org-setup-rg
 	@echo
 
 org-purge-kv:
-	@echo Starting to purge org key vault [$(org_keyvault)]
-	- az keyvault purge\
+	@echo Starting to delete and purge org key vault [$(org_keyvault)]
+	- az keyvault delete\
 		--subscription $(sub)\
 		--name $(org_keyvault)
+	- az keyvault purge\
+		--subscription $(sub)\
+		--name $(org_keyvault)\
+		--no-wait
 	@echo
 
 org-setup-lawks : org-setup-rg

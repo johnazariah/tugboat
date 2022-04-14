@@ -11,14 +11,7 @@ hello :
 	@echo   make tugboat-prepare-env
 	@echo
 
-tugboat-init : git-init az-login az-sub-set gh-login gh-create-repo
-	- proj_aad_app_name=$(proj_aad_app_name)\
-	  sub=$(sub)\
-	  github_user=$(github_user)\
-	  github_repo=$(github_repo)\
-	  .scripts/create-aad-app.sh
-
-	$(MAKE) replace_pattern=_GITHUB_USER_ replacement_pattern=$(github_user) replace_in_file=README.md replace-pattern
+tugboat-init : init-fixup-readme git-init az-login az-sub-set gh-login gh-create-repo az-create-aad-app
 	
 	@echo Your GitHub Repo is ready. 
 	@echo Now is a good time to go to the GitHub repo and run the `Azure Infrastructure Setup` pipeline to set up your Azure Infrastructure.

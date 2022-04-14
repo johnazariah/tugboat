@@ -1,6 +1,7 @@
 # GeneratedProjectName
 
-![CI](https://github.com/_GITHUB_USER_/GeneratedProjectName/workflows/CI/badge.svg)
+![Build and Test](https://github.com/_GITHUB_USER_/_ORG_-_PROJECT_/actions/workflows/ci.yml/badge.svg)
+![Deploy to AKS](https://github.com/_GITHUB_USER_/_ORG_-_PROJECT_/actions/workflows/deploy-to-aks.yml/badge.svg)
 
 ## Tugboat Template
 

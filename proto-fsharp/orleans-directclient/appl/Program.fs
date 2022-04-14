@@ -6,7 +6,9 @@ open Microsoft.AspNetCore.ResponseCompression
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.OpenApi.Models
+open Swashbuckle.AspNetCore.Swagger
 open System
+open System.Collections.Generic
 open System.IO
 open System.IO.Compression
 open System.Reflection
@@ -69,7 +71,18 @@ module WebApiConfigurator =
                 builder
                     .UseDefaultFiles()
                     .UseStaticFiles()
-                    .UseSwagger()
+                    .UseSwagger(fun (options : SwaggerOptions) ->
+                        options.PreSerializeFilters.Add (fun (swagger : OpenApiDocument) (httpReq : HttpRequest) ->
+                            let originalUrlKey = "X-Original-URL"
+                            let forwardedHostKey = "X-Forwarded-Host"
+                            if httpReq.Headers.ContainsKey(originalUrlKey) then
+                                let originalUrlParts = httpReq.Headers["X-Original-URL"].ToString().Trim('/').Split("/")
+                                let (applicationName, deploymentName) = originalUrlParts[0], originalUrlParts[1]
+                                let serverUrl = $"https://{httpReq.Headers}[{forwardedHostKey}]/{applicationName}/{deploymentName}"
+                                swagger.Servers <-
+                                    let mutable server = new OpenApiServer()
+                                    server.Url <- serverUrl
+                                    seq { server } |> List<OpenApiServer>))
                     .UseSwaggerUI(fun options -> options.SwaggerEndpoint(swaggerUri, swaggerName))
                     .UseResponseCompression()
                     .UseRouting()

@@ -57,7 +57,7 @@ namespace GeneratedProjectName.WebApi
             hostBuilder.ConfigureWebHostDefaults(webHostBuilder => 
                 webHostBuilder.Configure((webHostBuilderContext, applicationBuilder) => {
                     var hostEnv = webHostBuilderContext.HostingEnvironment;
-                    var swaggerUri = "./v1/swagger.json";
+                    var swaggerUri = "v1/swagger.json";
                     var swaggerName = $"{apiInfo.Title} {apiInfo.Version}";
 
                     var builder = hostEnv.IsDevelopment() ? applicationBuilder.UseDeveloperExceptionPage() : applicationBuilder;
@@ -68,7 +68,18 @@ namespace GeneratedProjectName.WebApi
                             FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
                             RequestPath = "",
                         })
-                        .UseSwagger()
+                        .UseSwagger(options => {
+                            options.PreSerializeFilters.Add((swagger, httpReq) => {
+                                if (httpReq.Headers.ContainsKey("X-Original-URL"))
+                                {
+                                    var originalUrlParts = httpReq.Headers["X-Original-URL"].ToString().Trim('/').Split("/");
+                                    var applicationName = originalUrlParts[0];
+                                    var deploymentName = originalUrlParts[1];
+                                    var serverUrl = $"https://{httpReq.Headers["X-Forwarded-Host"]}/{applicationName}/{deploymentName}";
+                                    swagger.Servers = new List<OpenApiServer> { new OpenApiServer { Url = serverUrl } };
+                                }
+                            });
+                        })
                         .UseSwaggerUI(options => options.SwaggerEndpoint(swaggerUri, swaggerName))
                         .UseResponseCompression()
                         .UseRouting()
