@@ -5,7 +5,7 @@ open Orleans.Contrib.UniversalSilo
 open Orleans.TestingHost
 open System
 open System.Threading.Tasks
-open GeneratedProjectName.Contract
+open global.GeneratedProjectName.Contract
 open Xunit
 
 /// <summary>
@@ -22,7 +22,7 @@ end
 [<Collection(nameof(ClusterCollection))>]
 type public GrainTests(fixture : ClusterFixture) = class
     // create a single grain to test if you want here, or alternately create a grain in the test itself
-    member val _calculatorGrain = fixture.Cluster.GrainFactory.GetGrain<ICalculatorGrain> <| Guid.NewGuid()
+    member val _calculatorGrain = Guid.NewGuid() |> fixture.Cluster.GrainFactory.GetGrain<ICalculatorGrain>
 
     /// <summary>
     /// This is a traditional unit test.
@@ -33,7 +33,7 @@ type public GrainTests(fixture : ClusterFixture) = class
     [<Fact>]
     member __.KnownNumbersAreAddedCorrectly () =
         // this is an example of creating a grain within the test from using the TestCluster instance
-        let adderGrain = fixture.Cluster.GrainFactory.GetGrain<ICalculatorGrain> <| Guid.NewGuid()
+        let adderGrain = Guid.NewGuid() |> fixture.Cluster.GrainFactory.GetGrain<ICalculatorGrain>
         let result = adderGrain.Add 1 2 |> Async.AwaitTask |> Async.RunSynchronously
         Assert.Equal(3, result)
 

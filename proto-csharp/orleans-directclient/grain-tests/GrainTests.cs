@@ -1,13 +1,12 @@
-using FsCheck.Xunit;
-using Orleans.Contrib.UniversalSilo;
-using Orleans.TestingHost;
-using System;
-using System.Threading.Tasks;
-using GeneratedProjectName.Contract;
-using Xunit;
-
 namespace Test.GeneratedProjectName
 {
+    using FsCheck.Xunit;
+    using global::GeneratedProjectName.Contract;
+    using Orleans.TestingHost;
+    using System;
+    using System.Threading.Tasks;
+    using Xunit;
+
     /// <summary>
     /// This is needed to group tests together into a fixture
     /// </summary>

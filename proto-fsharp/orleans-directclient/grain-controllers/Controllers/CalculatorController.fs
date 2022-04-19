@@ -32,6 +32,6 @@ type public CalculatorController (logger, orleansClient) = class
     [<HttpGet("{l}+{r}", Name = "Add")>]
     abstract Add : int -> int -> Task<int>
     default this.Add l r =
-        let adderGrain = this.OrleansClient.GetGrain<ICalculatorGrain> <| Guid.NewGuid()
+        let adderGrain = Guid.NewGuid() |> this.OrleansClient.GetGrain<ICalculatorGrain>
         adderGrain.Add l r
 end

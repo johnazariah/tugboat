@@ -66,7 +66,7 @@ pack :
 	@echo
 
 push :
-	dotnet nuget push ./$(package_name).$(package_version).nupkg -s https://api.nuget.org/v3/index.json -k $(NugetApiKey)
+	@echo dotnet nuget push ./$(package_name).$(package_version).nupkg -s https://api.nuget.org/v3/index.json -k $(NugetApiKey)
 	@echo Pushed Library to Nuget
 	@echo
 
@@ -104,11 +104,18 @@ setup-templates : clean-template-pack copy-template-pack pack-template-pack inst
 	@echo
 
 # Library Targets
-push-library : pack-library
-	$(MAKE) package_name=WestIsland.Tugboat package_version=$(LibraryVersion) push
+push-library : push-library.Tugboat push-library.UniversalSilo
+	@echo Done Pushing Library
+	@echo
+push-library.% : pack-library.%
+	$(MAKE) package_name=WestIsland.$* package_version=$(LibraryVersion) push
 
-pack-library :
-	$(MAKE) project_path=Library.Tugboat/Library.Tugboat.csproj package_name=WestIsland.Tugboat package_version=$(LibraryVersion) pack
+pack-library.Tugboat : pack-library.% :
+	$(MAKE) project_path=Library.$*/Library.$*.csproj package_name=WestIsland.$* package_version=$(LibraryVersion) pack
+
+pack-library.UniversalSilo : pack-library.% :
+	$(MAKE) project_path=Library.$*/Library.$*.fsproj package_name=WestIsland.$* package_version=$(LibraryVersion) pack
+
 
 # Clean Targets
 clean-packages :
@@ -184,6 +191,7 @@ copy-ignores.% :
 
 replace-project-reference-with-nuget-reference :
 	- sed -e "s/<ProjectReference.*Library.Tugboat.csproj\"/<PackageReference Include=\"WestIsland.Tugboat\" Version=\"*\"/g" $(proto_root)-$(lang)/$*/$(src_project_file) > $(copy_target_root)/$(dest_project_file)
+	- sed -e "s/<ProjectReference.*Library.UniversalSilo.fsproj\"/<PackageReference Include=\"WestIsland.UniversalSilo\" Version=\"*\"/g" $(proto_root)-$(lang)/$*/$(src_project_file) > $(copy_target_root)/$(dest_project_file)
 
 pack-template-pack :
 	$(MAKE) project_path=$(scratch)/build/Tugboat.Templates.csproj package_name=WestIsland.Tugboat.Templates package_version=$(LibraryVersion) pack

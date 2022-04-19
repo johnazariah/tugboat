@@ -15,9 +15,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using static Orleans.Contrib.UniversalSilo.Configuration;
-using static Orleans.Contrib.UniversalSilo.HealthChecks;
-using Orleans.Contrib.UniversalSilo;
 
 namespace GeneratedProjectName.WebApiDirectClient
 {

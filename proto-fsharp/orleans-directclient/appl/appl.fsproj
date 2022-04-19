@@ -20,18 +20,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="6.0.3" />
+    <PackageReference Update="FSharp.Core" Version="6.0.4-beta.22181.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0-preview.2.22152.2" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0-preview.2.22152.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0-preview.2.22152.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0-preview.2.22152.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0-preview.2.22152.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0-preview.2.22152.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0-preview.2.22152.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0-preview.2.22152.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0-preview.3.22175.4" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0-preview.3.22175.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0-preview.3.22175.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0-preview.3.22175.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0-preview.3.22175.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0-preview.3.22175.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0-preview.3.22175.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0-preview.3.22175.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,30 +44,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Orleans.Client" Version="3.6.0" />
-    <PackageReference Include="Microsoft.Orleans.Clustering.AzureStorage" Version="3.6.0" />
-    <PackageReference Include="Microsoft.Orleans.Core" Version="3.6.0" />
-    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.6.0" />
-    <PackageReference Include="Microsoft.Orleans.OrleansCodeGenerator" Version="3.6.0" />
-    <PackageReference Include="Microsoft.Orleans.OrleansProviders" Version="3.6.0" />
-    <PackageReference Include="Microsoft.Orleans.OrleansRuntime" Version="3.6.0" />
-    <PackageReference Include="Microsoft.Orleans.OrleansTelemetryConsumers.AI" Version="3.6.0" />
-    <PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="3.6.0" />
-    <PackageReference Include="Microsoft.Orleans.Reminders.AzureStorage" Version="3.6.0" />
-    <PackageReference Include="Microsoft.Orleans.Runtime.Abstractions" Version="3.6.0" />
-    <PackageReference Include="Microsoft.Orleans.Server" Version="3.6.0" />
+    <PackageReference Include="Microsoft.Orleans.Clustering.AzureStorage" Version="4.0.0-preview1" />
+    <PackageReference Include="Microsoft.Orleans.OrleansTelemetryConsumers.AI" Version="4.0.0-preview1" />
+    <PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="4.0.0-preview1" />
+    <PackageReference Include="Microsoft.Orleans.Reminders.AzureStorage" Version="4.0.0-preview1" />
+    <PackageReference Include="Microsoft.Orleans.Server" Version="4.0.0-preview1" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" Version="4.0.0-preview1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Orleans.Clustering.Kubernetes" Version="2.1.0" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="OrleansDashboard" Version="3.6.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Orleans.Contrib.UniversalSilo" Version="*" />
+    <ProjectReference Include="..\..\..\Library.UniversalSilo\Library.UniversalSilo.fsproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -75,7 +70,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\grain-controllers\grain-controllers.fsproj" />
+    <ProjectReference Include="..\grain-controllers\grain.controllers.fsproj" />
     <ProjectReference Include="..\grains\grains.fsproj" />
   </ItemGroup>
 </Project>
